@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/clothing">
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/list_sex"
+            android:entryValues="@array/list_sex_values"
+            android:key="sex"
+            android:summary="%s"
+            android:title="@string/sex" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/list_styles"
+            android:entryValues="@array/list_styles_values"
+            android:key="style"
+            android:summary="%s"
+            android:title="@string/style" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/weather">
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/list_degree"
+            android:entryValues="@array/list_degree_values"
+            android:key="degree"
+            android:summary="%s"
+            android:title="@string/degree" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/list_weather_for_date"
+            android:entryValues="@array/list_weather_for_date_values"
+            android:key="date"
+            android:summary="%s"
+            android:title="@string/weather_for_date" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

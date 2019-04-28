@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">Ajustes</string>
+    <string name="preferences">Preferencias</string>
+    <string name="city">Ciudad</string>
+    <string name="loading">Cargando&#8230;</string>
+    <string name="location">Ubicación</string>
+    <string name="refresh">Recarga la página</string>
+    <string name="sex">Sexo</string>
+    <string-array name="list_sex">
+        <item>Hombre</item>
+        <item>Mujer</item>
+    </string-array>
+    <string name="style">Estilo</string>
+    <string-array name="list_styles">
+        <item>Casual</item>
+        <item>Oficial</item>
+        <item>Deportivo</item>
+    </string-array>
+    <string name="weather_data_not_found">Datos meteorológicos no encontrados</string>
+    <string name="city_hint">Ingresa la ciudad</string>
+    <string name="cur_city">Ciudad actual</string>
+    <string name="save">Guardar</string>
+    <string name="wind">Viento</string>
+    <string name="meter_sec">m/s</string>
+    <string name="humidity">Humedad</string>
+    <string name="weather_for_date">Clima por</string>
+    <string-array name="list_weather_for_date">
+        <item>Ahora</item>
+        <item>Hoy</item>
+        <item>Mañana</item>
+    </string-array>
+    <string name="waiting_for_network">Esperando conexión#8230;</string>
+    <string name="degree">Unidad de temperatura</string>
+    <string name="weather">Clima</string>
+    <string name="clothing">Ropa</string>
+</resources>

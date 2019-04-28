@@ -1,11 +1,17 @@
 <resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="CawTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkAndText</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:windowBackground">@color/colorBackgroundAndText</item>
+        <item name="android:textColor">@color/colorPrimaryDarkAndText</item>
+        <item name="android:colorBackground">@color/colorBackgroundAndText</item>
+        <item name="android:colorForeground">@color/colorPrimaryDarkAndText</item>
+        <item name="android:textColorPrimary">@color/colorPrimaryDarkAndText</item>
+        <item name="android:textColorPrimaryInverse">@color/colorBackgroundAndText</item>
     </style>
-
+    
+    <style name="CawTheme.Launcher" parent="CawTheme">
+        <item name="android:windowBackground">@drawable/app_launcher_splash</item>
+    </style>
 </resources>

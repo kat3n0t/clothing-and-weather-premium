@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="loading">Laden&#8230;</string>
+    <string name="refresh">Aktualisierung</string>
+    <string name="settings">Einstellungen</string>
+    <string name="wind">Wind</string>
+    <string name="meter_sec">m/s</string>
+    <string name="humidity">Feuchtigkeit</string>
+    <string name="style">Still</string>
+    <string name="weather_for_date">Wetter an</string>
+    <string name="location">Standort</string>
+    <string name="city">Stadt</string>
+    <string name="cur_city">Aktuelle Stadt:</string>
+    <string name="city_hint">Geben Sie die Stadt ein</string>
+    <string name="save">Speichern</string>
+    <string name="sex">Geschlecht</string>
+    <string name="preferences">Einstellungen</string>
+    <string name="weather_data_not_found">Keine Wetterdaten gefunden</string>
+    <string name="waiting_for_network">Auf Verbindung warten#8230;</string>
+    <string name="degree">Temperatureinheit</string>
+    <string name="weather">Wetter</string>
+    <string name="clothing">Kleidung</string>
+</resources>
