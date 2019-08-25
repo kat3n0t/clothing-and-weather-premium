@@ -5,6 +5,8 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlin.math.pow
+import kotlin.math.round
 
 private const val OWM_LINK = "http://api.openweathermap.org/"
 private const val OWN_DATA = "data/2.5/"
@@ -81,11 +83,11 @@ class Weather(private val city: String) {
     fun coldWindIndex(temperature: Double, speed: Double, humidity: Double): Double {
         // ветро-холодовый индекс, согласно формуле
         if ((temperature <= 10) && (speed > 4.8)) {
-            var windColdIndex = 13.2 + 0.6215 * temperature - 11.37 * Math.pow(speed, 0.16) +
-                    0.3965 * temperature * Math.pow(speed, 0.16)
+            var windColdIndex = 13.2 + 0.6215 * temperature - 11.37 * speed.pow(0.16) +
+                    0.3965 * temperature * speed.pow(0.16)
             if (humidity > 60)
                 windColdIndex -= 2
-            windColdIndex = Math.rint(10 * windColdIndex) / 10
+            windColdIndex = round(10 * windColdIndex) / 10
             return windColdIndex
         } else if (temperature >= 20) {
             var heatLoad = temperature
@@ -95,7 +97,7 @@ class Weather(private val city: String) {
                 heatLoad += 2
             if ((temperature > 30) && (humidity > 70))
                 heatLoad += 2
-            heatLoad = Math.rint(10 * heatLoad) / 10
+            heatLoad = round(10 * heatLoad) / 10
             return heatLoad
         } else return temperature
     }

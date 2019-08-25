@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="city">Stad</string>
+    <string name="city_hint">Ange stad</string>
+    <string name="clothing">Kläder</string>
+    <string name="cur_city">Nuvarande stad:</string>
+    <string name="degree">Temperaturenhet</string>
+    <string name="humidity">Fuktighet</string>
+    <string name="loading">Lastning…</string>
+    <string name="location">Plats</string>
+    <string name="meter_sec">m/sek</string>
+    <string name="preferences">Inställningar</string>
+    <string name="refresh">Uppdatera</string>
+    <string name="save">Spara</string>
+    <string name="settings">Inställningar</string>
+    <string name="sex">Kön</string>
+    <string name="style">Stil</string>
+    <string name="waiting_for_network">Väntar på nätverk ...</string>
+    <string name="weather_data_not_found">Väderinformation hittades inte</string>
+    <string name="weather_for_date">Väder för</string>
+    <string name="weather">Väder</string>
+    <string name="wind">Vind</string>
+</resources>
