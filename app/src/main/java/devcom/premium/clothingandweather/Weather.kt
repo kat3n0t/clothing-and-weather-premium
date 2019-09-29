@@ -20,11 +20,11 @@ private const val OWM_APP_ID = "a504db88a71fcc06534c4a94f415d98a"
  */
 class Weather(private val city: String) {
 
-    /**
-     * weatherType:
-     * 0 - WEATHER; 1 - FORECAST
-     */
-    fun jsonObject(weatherType: Int) = getWeatherJSON(weatherUrl(weatherType))
+    fun jsonObject(@WeatherType type: Int) =
+        if (type in WeatherType.all)
+            getWeatherJSON(weatherUrl(type))
+        else
+            null
 
     private fun getWeatherJSON(url: URL?): JSONObject? {
         if (url != null) {
@@ -56,10 +56,17 @@ class Weather(private val city: String) {
         } else return null
     }
 
-    private fun weatherUrl(weatherType: Int) = when (weatherType) {
-        0 -> URL("$OWM_LINK$OWN_DATA$OWM_TYPE_WEATHER?q=$city&units=metric&APPID=$OWM_APP_ID")
-        1, 2 -> URL("$OWM_LINK$OWN_DATA$OWM_TYPE_FORECAST?q=$city&units=metric&APPID=$OWM_APP_ID")
-        else -> null
+    private fun weatherUrl(@WeatherType type: Int) : URL? {
+        return if (type in WeatherType.all) {
+            val linkPart =
+                if (type in WeatherType.allForecast)
+                    OWM_TYPE_FORECAST
+                else
+                    OWM_TYPE_WEATHER
+
+            URL("$OWM_LINK$OWN_DATA$linkPart?q=$city&units=metric&APPID=$OWM_APP_ID")
+        } else
+            null
     }
 
     fun iconUrl(imgId: String) = URL("$OWM_LINK$OWN_IMG$imgId.png")

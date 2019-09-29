@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateAPIConnection() {
         setTitle(R.string.waiting_for_network)
-        setInfoInvisible()
+        switchInfoVisible(false)
         prBar.visibility = View.VISIBLE
 
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
@@ -176,14 +176,14 @@ class MainActivity : AppCompatActivity() {
                                 }
 
                                 prBar.visibility = View.GONE
-                                setInfoVisible()
+                                switchInfoVisible(true)
                             }
                         }
                     } else {
                         handler.post {
                             setTitle(R.string.weather_data_not_found)
                             prBar.visibility = View.GONE
-                            setInfoInvisible()
+                            switchInfoVisible(false)
                         }
                     }
                 } else {
@@ -193,16 +193,12 @@ class MainActivity : AppCompatActivity() {
         }.start()
     }
 
-    private fun setInfoVisible() {
-        textView_speed.visibility = View.VISIBLE
-        textView_humidity.visibility = View.VISIBLE
-        imageView_icon.visibility = View.VISIBLE
-    }
+    private fun switchInfoVisible(isCanVisible: Boolean) {
+        val visibility = if (isCanVisible) View.VISIBLE else View.INVISIBLE
 
-    private fun setInfoInvisible() {
-        textView_speed.visibility = View.INVISIBLE
-        textView_humidity.visibility = View.INVISIBLE
-        imageView_icon.visibility = View.INVISIBLE
+        textView_speed.visibility = visibility
+        textView_humidity.visibility = visibility
+        imageView_icon.visibility = visibility
     }
 
     private fun isNetworkAvailable(): Boolean {
