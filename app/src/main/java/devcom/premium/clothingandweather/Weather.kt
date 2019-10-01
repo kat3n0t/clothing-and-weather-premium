@@ -1,113 +1,53 @@
 package devcom.premium.clothingandweather
 
-import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
 import kotlin.math.pow
 import kotlin.math.round
 
-private const val OWM_LINK = "http://api.openweathermap.org/"
-private const val OWN_DATA = "data/2.5/"
-private const val OWN_IMG = "img/w/"
-private const val OWM_TYPE_WEATHER = "weather"
-private const val OWM_TYPE_FORECAST = "forecast"
-private const val OWM_APP_ID = "a504db88a71fcc06534c4a94f415d98a"
+data class Weather(val temperatureCelsius: Double, val windSpeed: Double, val humidity: Double) {
+    /**
+     * перевод температуры из градусов Цельсия в Фаренгейт
+     */
+    val temperatureFahrenheit = temperatureCelsius * 1.8 + 32
+    /**
+     * перевод из м/ч в км/ч
+     */
+    private val windSpeedKmHour = if (windSpeed != 0.0) windSpeed * 3.6 else windSpeed
 
-/**
- * Вспомогательный класс для работы с API openweathermap.org
- */
-class Weather(private val city: String) {
-
-    fun jsonObject(@WeatherType type: Int) =
-        if (type in WeatherType.all)
-            getWeatherJSON(weatherUrl(type))
-        else
-            null
-
-    private fun getWeatherJSON(url: URL?): JSONObject? {
-        if (url != null) {
-            val connection: HttpURLConnection? = urlConnection(url)
-            if (connection != null) {
-                try {
-                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
-
-                    val json = StringBuffer(1024)
-                    var tmp: String?
-                    do {
-                        tmp = reader.readLine()
-                        if (tmp == null)
-                            break
-                        json.append(tmp).append("\n")
-                    } while (true)
-                    reader.close()
-
-                    val data = JSONObject(json.toString())
-                    return if (isCorrectData(data)) {
-                        return data
-                    } else null
-                } catch (e: Exception) {
-                    return null
-                } finally {
-                    connection.disconnect()
-                }
-            } else return null
-        } else return null
-    }
-
-    private fun weatherUrl(@WeatherType type: Int) : URL? {
-        return if (type in WeatherType.all) {
-            val linkPart =
-                if (type in WeatherType.allForecast)
-                    OWM_TYPE_FORECAST
-                else
-                    OWM_TYPE_WEATHER
-
-            URL("$OWM_LINK$OWN_DATA$linkPart?q=$city&units=metric&APPID=$OWM_APP_ID")
-        } else
-            null
-    }
-
-    fun iconUrl(imgId: String) = URL("$OWM_LINK$OWN_IMG$imgId.png")
-
-    private fun urlConnection(url: URL): HttpURLConnection? {
-        return try {
-            val connection: HttpURLConnection? = url.openConnection() as HttpURLConnection
-            connection?.requestMethod = "GET"
-            connection?.connectTimeout = 10000
-            connection?.readTimeout = 10000
-            connection
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    // код 200 возвращается в случае, если данные не повреждены
-    private fun isCorrectData(data: JSONObject) = data.getInt("cod") == 200
-
-    // Корректируем погоду по восприятию
-    fun coldWindIndex(temperature: Double, speed: Double, humidity: Double): Double {
-        // ветро-холодовый индекс, согласно формуле
-        if ((temperature <= 10) && (speed > 4.8)) {
-            var windColdIndex = 13.2 + 0.6215 * temperature - 11.37 * speed.pow(0.16) +
-                    0.3965 * temperature * speed.pow(0.16)
+    /**
+     * @return температура по ощущениям в градусах Цельсия
+     */
+    fun getTemperatureCelsiusPerception(): Double {
+        var correctTemperature = temperatureCelsius
+        if ((temperatureCelsius <= 10) && (windSpeedKmHour > 4.8)) {
+            // ветро-холодовый индекс, согласно формуле
+            var windColdIndex =
+                13.2 + 0.6215 * temperatureCelsius - 11.37 * windSpeedKmHour.pow(0.16) +
+                        0.3965 * temperatureCelsius * windSpeedKmHour.pow(0.16)
             if (humidity > 60)
                 windColdIndex -= 2
-            windColdIndex = round(10 * windColdIndex) / 10
-            return windColdIndex
-        } else if (temperature >= 20) {
-            var heatLoad = temperature
+            correctTemperature = round(10 * windColdIndex) / 10
+        }
+        correctTemperature += getCelsiusHeatLoad(temperatureCelsius, humidity)
+        return correctTemperature
+    }
+
+    /**
+     * Корректировка температуры по тепловой нагрузке
+     * @param temperature температура в градусах Цельсия
+     * @param humidity влажность воздуха
+     * @return сдвиг на градусы Цельсия в зависимости от тепловой нагрузки
+     */
+    private fun getCelsiusHeatLoad(temperature: Double, humidity: Double): Double {
+        var heatLoad = 0.0
+        if (temperature >= 20) {
             if (humidity < 30)
                 heatLoad -= 2
             else if (humidity > 50)
                 heatLoad += 2
-            if ((temperature > 30) && (humidity > 70))
-                heatLoad += 2
-            heatLoad = round(10 * heatLoad) / 10
-            return heatLoad
-        } else return temperature
-    }
 
-    fun convertCelsiusToFahrenheit(tempWithCelsius: Double = 0.0) = tempWithCelsius * 1.8 + 32
+            if ((humidity > 70) && (temperature > 30))
+                heatLoad += 2
+        }
+        return heatLoad
+    }
 }

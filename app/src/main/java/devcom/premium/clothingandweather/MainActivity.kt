@@ -72,11 +72,13 @@ class MainActivity : AppCompatActivity() {
         object : Thread() {
             override fun run() {
                 if (isNetworkAvailable()) {
-                    setTitle(R.string.loading)
+                    try {
+                        setTitle(R.string.loading)
 
-                    val weather = Weather(city)
-                    val json: JSONObject? = weather.jsonObject(weatherDate)
-                    if (json != null) {
+                        val weatherApi = WeatherApi(city)
+                        val json: JSONObject = weatherApi.jsonObject(weatherDate)
+                            ?: throw Exception(getString(R.string.weather_data_not_found))
+
                         handler.post {
                             var mainDataObject: JSONObject? = null
                             var windDataObject: JSONObject? = null
@@ -88,12 +90,14 @@ class MainActivity : AppCompatActivity() {
                                     mainDataObject = json.getJSONObject("main")
                                     weatherDataArray = json.getJSONArray("weather")
                                     windDataObject = json.getJSONObject("wind")
-                                    iconName = weatherDataArray.getJSONObject(0).getString("icon")
+                                    iconName =
+                                        weatherDataArray.getJSONObject(0).getString("icon")
                                 }
                                 1 -> {
                                     val list = json.getJSONArray("list")
                                     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                                    val currentDate = dateFormat.format(Calendar.getInstance().time)
+                                    val currentDate =
+                                        dateFormat.format(Calendar.getInstance().time)
                                     val cnt = json.getInt("cnt")
                                     for (i in 1 until cnt - 1) {
                                         if (list.getJSONObject(i).getString("dt_txt").contains("$currentDate 1") or
@@ -101,7 +105,8 @@ class MainActivity : AppCompatActivity() {
                                         ) {
                                             val weatherDay = list.getJSONObject(i)
                                             mainDataObject = weatherDay.getJSONObject("main")
-                                            weatherDataArray = weatherDay.getJSONArray("weather")
+                                            weatherDataArray =
+                                                weatherDay.getJSONArray("weather")
                                             windDataObject = weatherDay.getJSONObject("wind")
                                             iconName = weatherDataArray.getJSONObject(0)
                                                 .getString("icon")
@@ -122,7 +127,8 @@ class MainActivity : AppCompatActivity() {
                                         ) {
                                             val weatherDay = list.getJSONObject(i)
                                             mainDataObject = weatherDay.getJSONObject("main")
-                                            weatherDataArray = weatherDay.getJSONArray("weather")
+                                            weatherDataArray =
+                                                weatherDay.getJSONArray("weather")
                                             windDataObject = weatherDay.getJSONObject("wind")
                                             iconName = weatherDataArray.getJSONObject(0)
                                                 .getString("icon")
@@ -132,59 +138,50 @@ class MainActivity : AppCompatActivity() {
                                 }
                             }
 
-                            if (mainDataObject != null) {
-                                val temperature = mainDataObject.getDouble("temp")
-                                title = when (weatherDegree) {
-                                    1 -> // celsius
-                                        "$temperature °C"
-                                    2 -> // fahrenheit
-                                        String.format(
-                                            "%.1f",
-                                            weather.convertCelsiusToFahrenheit(temperature)
-                                        ).replace(
-                                            ',', '.'
-                                        ) + " °F"
-                                    else -> // celsius and fahrenheit
-                                        "$temperature °C / " + String.format(
-                                            "%.1f",
-                                            weather.convertCelsiusToFahrenheit(temperature)
-                                        ).replace(
-                                            ',', '.'
-                                        ) + " °F"
-                                }
+                            if ((mainDataObject == null) || (windDataObject == null))
+                                throw Exception(getString(R.string.weather_data_not_found))
 
-                                var speed = windDataObject!!.getDouble("speed")
-                                val humidity = mainDataObject.getDouble("humidity")
-                                setTextInfo(speed, humidity)
+                            val weather = Weather(
+                                mainDataObject.getDouble("temp"),
+                                windDataObject.getDouble("speed"),
+                                mainDataObject.getDouble("humidity")
+                            )
+                            setTextInfo(weather.windSpeed, weather.humidity)
 
-                                if (speed != 0.0) speed *= 3.6 // *3.6 - перевод из м/ч в км/ч
-                                val perceivedTemp =
-                                    weather.coldWindIndex(temperature, speed, humidity)
-                                model.setImageResource(
-                                    clothes.clothesId(
-                                        sex.toInt(),
-                                        style.toInt(),
-                                        perceivedTemp
-                                    )
-                                )
-
-                                val urlIcon = weather.iconUrl(iconName)
-                                try {
-                                    Picasso.get().load(urlIcon.toString()).into(imageView_icon)
-                                } catch (e: Exception) {
-                                    Error("Error loading image!")
-                                }
-
-                                prBar.visibility = View.GONE
-                                switchInfoVisible(true)
+                            title = when (weatherDegree) {
+                                1 -> // celsius
+                                    "${weather.temperatureCelsius} °C"
+                                2 -> // fahrenheit
+                                    String.format(
+                                        "%.1f",
+                                        weather.temperatureFahrenheit
+                                    ).replace(
+                                        ',', '.'
+                                    ) + " °F"
+                                else -> // celsius and fahrenheit
+                                    "${weather.temperatureCelsius} °C / " + String.format(
+                                        "%.1f",
+                                        weather.temperatureFahrenheit
+                                    ).replace(
+                                        ',', '.'
+                                    ) + " °F"
                             }
-                        }
-                    } else {
-                        handler.post {
-                            setTitle(R.string.weather_data_not_found)
+
+                            val perceivedTemp = weather.getTemperatureCelsiusPerception()
+                            model.setImageResource(
+                                clothes.clothesId(sex.toInt(), style.toInt(), perceivedTemp)
+                            )
+
+                            val urlIcon = weatherApi.iconUrl(iconName)
+                            Picasso.get().load(urlIcon.toString()).into(imageView_icon)
+
                             prBar.visibility = View.GONE
-                            switchInfoVisible(false)
+                            switchInfoVisible(true)
                         }
+                    } catch (e: Exception) {
+                        title = e.message
+                        prBar.visibility = View.GONE
+                        switchInfoVisible(false)
                     }
                 } else {
                     prBar.visibility = View.GONE
