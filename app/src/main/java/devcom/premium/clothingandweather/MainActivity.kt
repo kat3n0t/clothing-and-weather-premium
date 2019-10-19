@@ -63,8 +63,10 @@ class MainActivity : AppCompatActivity() {
 
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
 
-        val sex = sharedPref.getString("sex", "0")
-        val style = sharedPref.getString("style", "0")
+        val human = Human(
+            sharedPref.getString("sex", "0").toInt(),
+            sharedPref.getString("style", "0").toInt()
+        )
         val city = sharedPref.getString("city", "Kemerovo, RU")
         val weatherDegree = sharedPref.getString("degree", "0").toInt()
         val weatherDate = sharedPref.getString("date", "0").toInt()
@@ -168,9 +170,7 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             val perceivedTemp = weather.getTemperatureCelsiusPerception()
-                            model.setImageResource(
-                                clothes.clothesId(sex.toInt(), style.toInt(), perceivedTemp)
-                            )
+                            model.setImageResource(clothes.clothesId(human, perceivedTemp))
 
                             val urlIcon = weatherApi.iconUrl(iconName)
                             Picasso.get().load(urlIcon.toString()).into(imageView_icon)
