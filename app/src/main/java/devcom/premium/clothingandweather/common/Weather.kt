@@ -1,4 +1,4 @@
-package devcom.premium.clothingandweather
+package devcom.premium.clothingandweather.common
 
 import kotlin.math.pow
 import kotlin.math.round

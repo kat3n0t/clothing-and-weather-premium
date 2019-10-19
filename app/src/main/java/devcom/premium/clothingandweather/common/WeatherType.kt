@@ -1,4 +1,4 @@
-package devcom.premium.clothingandweather
+package devcom.premium.clothingandweather.common
 
 annotation class WeatherType {
     companion object {

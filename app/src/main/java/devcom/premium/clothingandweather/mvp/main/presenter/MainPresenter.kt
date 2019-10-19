@@ -1,85 +1,68 @@
-package devcom.premium.clothingandweather
+package devcom.premium.clothingandweather.mvp.main.presenter
 
-import android.content.Context
-import android.content.Intent
-import android.content.pm.ActivityInfo
-import android.content.res.Configuration
-import android.net.ConnectivityManager
-import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import androidx.annotation.NonNull
 import com.squareup.picasso.Picasso
+import devcom.premium.clothingandweather.LocationActivity
+import devcom.premium.clothingandweather.R
+import devcom.premium.clothingandweather.SettingsActivity
+import devcom.premium.clothingandweather.common.Clothes
+import devcom.premium.clothingandweather.common.Human
+import devcom.premium.clothingandweather.common.Weather
+import devcom.premium.clothingandweather.data.WeatherApi
+import devcom.premium.clothingandweather.mvp.main.view.MainActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+private const val DEFAULT_CITY = "Kemerovo, RU"
+
+class MainPresenter(@NonNull private val activity: MainActivity) : IMainPresenter {
 
     private var handler: Handler = Handler()
     private val clothes = Clothes()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.CawTheme) // переход от темы .Launcher к обычной теме приложения
-        super.onCreate(savedInstanceState)
-        setOrientation()
-        setContentView(R.layout.activity_main)
-    }
-
-    private fun setOrientation() {
-        requestedOrientation = if (resources.configuration.screenLayout
-            and Configuration.SCREENLAYOUT_SIZE_MASK == Configuration.SCREENLAYOUT_SIZE_LARGE ||
-            resources.configuration.screenLayout
-            and Configuration.SCREENLAYOUT_SIZE_MASK == Configuration.SCREENLAYOUT_SIZE_XLARGE
-        )
-            ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-        else
-            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-    }
-
     override fun onStart() {
-        super.onStart()
-
-        loadDefaultModel()
+        activity.showDefaultModel()
         updateAPIConnection()
     }
 
-    private fun loadDefaultModel() {
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
-        val sex = sharedPref.getString("sex", "0")
-        if (sex == "0") model.setImageResource(R.drawable.man_default)
-        else if (sex == "1") model.setImageResource(R.drawable.woman_default)
+    override fun onLaunchLocation() {
+        activity.launchActivity(LocationActivity::class.java)
     }
 
-    private fun updateAPIConnection() {
-        setTitle(R.string.waiting_for_network)
-        switchInfoVisible(false)
-        prBar.visibility = View.VISIBLE
+    override fun onLaunchPreferences() {
+        activity.launchActivity(SettingsActivity::class.java)
+    }
 
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
+    override fun updateAPIConnection() {
+        activity.setTitle(R.string.waiting_for_network)
+        activity.switchInfoVisible(false)
+        activity.prBar.visibility = View.VISIBLE
+
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
 
         val human = Human(
             sharedPref.getString("sex", "0").toInt(),
             sharedPref.getString("style", "0").toInt()
         )
-        val city = sharedPref.getString("city", "Kemerovo, RU")
+        val city = sharedPref.getString("city", DEFAULT_CITY)
         val weatherDegree = sharedPref.getString("degree", "0").toInt()
         val weatherDate = sharedPref.getString("date", "0").toInt()
 
         object : Thread() {
             override fun run() {
-                if (isNetworkAvailable()) {
+                if (activity.isNetworkAvailable()) {
                     try {
-                        setTitle(R.string.loading)
+                        activity.setTitle(R.string.loading)
 
                         val weatherApi = WeatherApi(city)
                         val json: JSONObject = weatherApi.jsonObject(weatherDate)
-                            ?: throw Exception(getString(R.string.weather_data_not_found))
+                            ?: throw Exception(activity.getString(R.string.weather_data_not_found))
 
                         handler.post {
                             var mainDataObject: JSONObject? = null
@@ -141,25 +124,23 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             if ((mainDataObject == null) || (windDataObject == null))
-                                throw Exception(getString(R.string.weather_data_not_found))
+                                throw Exception(activity.getString(R.string.weather_data_not_found))
 
                             val weather = Weather(
                                 mainDataObject.getDouble("temp"),
                                 windDataObject.getDouble("speed"),
                                 mainDataObject.getDouble("humidity")
                             )
-                            setTextInfo(weather.windSpeed, weather.humidity)
+                            activity.setTextInfo(weather)
 
-                            title = when (weatherDegree) {
+                            activity.title = when (weatherDegree) {
                                 1 -> // celsius
                                     "${weather.temperatureCelsius} °C"
                                 2 -> // fahrenheit
                                     String.format(
                                         "%.1f",
                                         weather.temperatureFahrenheit
-                                    ).replace(
-                                        ',', '.'
-                                    ) + " °F"
+                                    ).replace(',', '.') + " °F"
                                 else -> // celsius and fahrenheit
                                     "${weather.temperatureCelsius} °C / " + String.format(
                                         "%.1f",
@@ -170,70 +151,23 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             val perceivedTemp = weather.getTemperatureCelsiusPerception()
-                            model.setImageResource(clothes.clothesId(human, perceivedTemp))
+                            activity.model.setImageResource(clothes.clothesId(human, perceivedTemp))
 
                             val urlIcon = weatherApi.iconUrl(iconName)
-                            Picasso.get().load(urlIcon.toString()).into(imageView_icon)
+                            Picasso.get().load(urlIcon.toString()).into(activity.imageView_icon)
 
-                            prBar.visibility = View.GONE
-                            switchInfoVisible(true)
+                            activity.prBar.visibility = View.GONE
+                            activity.switchInfoVisible(true)
                         }
                     } catch (e: Exception) {
-                        title = e.message
-                        prBar.visibility = View.GONE
-                        switchInfoVisible(false)
+                        activity.title = e.message
+                        activity.prBar.visibility = View.GONE
+                        activity.switchInfoVisible(false)
                     }
                 } else {
-                    prBar.visibility = View.GONE
+                    activity.prBar.visibility = View.GONE
                 }
             }
         }.start()
-    }
-
-    private fun switchInfoVisible(isCanVisible: Boolean) {
-        val visibility = if (isCanVisible) View.VISIBLE else View.INVISIBLE
-
-        textView_speed.visibility = visibility
-        textView_humidity.visibility = visibility
-        imageView_icon.visibility = visibility
-    }
-
-    private fun isNetworkAvailable(): Boolean {
-        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = cm.activeNetworkInfo
-        return networkInfo != null && networkInfo.isConnected
-    }
-
-    private fun setTextInfo(speed: Double, humidity: Double) {
-        val textSpeed = getString(R.string.wind) + " = " +
-                speed + " " + getString(R.string.meter_sec)
-        val textHumidity = getString(R.string.humidity) + " = " + humidity.toString() + "%"
-        textView_speed.text = textSpeed
-        textView_humidity.text = textHumidity
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.navigation, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.navigation_btnRefresh -> {
-                updateAPIConnection()
-                return true
-            }
-            R.id.navigation_btnPreferences -> {
-                val intent = Intent(this, SettingsActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.navigation_btnLocation -> {
-                val intent = Intent(this, LocationActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
     }
 }

@@ -1,5 +1,6 @@
-package devcom.premium.clothingandweather
+package devcom.premium.clothingandweather.data
 
+import devcom.premium.clothingandweather.common.WeatherType
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader

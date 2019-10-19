@@ -12,6 +12,9 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.view.View
 import android.widget.RemoteViews
+import devcom.premium.clothingandweather.common.Weather
+import devcom.premium.clothingandweather.data.WeatherApi
+import devcom.premium.clothingandweather.mvp.main.view.MainActivity
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
