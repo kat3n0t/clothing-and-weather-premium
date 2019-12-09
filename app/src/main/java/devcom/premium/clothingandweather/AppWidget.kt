@@ -12,9 +12,11 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.view.View
 import android.widget.RemoteViews
+import devcom.premium.clothingandweather.common.Weather
+import devcom.premium.clothingandweather.data.WeatherApi
+import devcom.premium.clothingandweather.mvp.main.view.MainActivity
+import devcom.premium.clothingandweather.mvp.model.DataModel
 import org.json.JSONObject
-import java.text.SimpleDateFormat
-import java.util.*
 
 class AppWidget : AppWidgetProvider() {
 
@@ -30,16 +32,13 @@ class AppWidget : AppWidgetProvider() {
     companion object {
         var hasLoadedData: Boolean = false
         private var handler: Handler = Handler()
-        private var weatherText = ""
-        private var speedText = ""
-        private var humidityText = ""
 
         internal fun updateAppWidget(
             context: Context, appWidgetManager: AppWidgetManager,
             appWidgetId: Int
         ) {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-            val city = sharedPref.getString("city", "Kemerovo, RU")
+            val city = sharedPref.getString("city", "Kemerovo, RU")!!
             val weatherDegree = sharedPref.getString("degree", "0").toInt()
 
             object : Thread() {
@@ -47,118 +46,95 @@ class AppWidget : AppWidgetProvider() {
                     val cm =
                         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                     if (cm.activeNetworkInfo.isConnected) {
-                        val weather = Weather(city)
-                        val json: JSONObject? = weather.jsonObject(1)
-                        if (json != null) {
+                        try {
+                            val weatherApi = WeatherApi(city)
+                            val json: JSONObject = weatherApi.jsonObject(1)
+                                ?: throw Exception(context.getString(R.string.weather_data_not_found))
+
                             handler.post {
-                                var mainDataObject: JSONObject? = null
-                                var windDataObject: JSONObject? = null
+                                val dayJSON = DataModel.weatherDay(json, 1)
+                                    ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
-                                val list = json.getJSONArray("list")
-                                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                                val currentDate = dateFormat.format(Calendar.getInstance().time)
-                                for (i in 1 until json.getInt("cnt") - 1) {
-                                    if (list.getJSONObject(i).getString("dt_txt").contains("$currentDate 1") or
-                                        list.getJSONObject(i).getString("dt_txt").contains("$currentDate 2")
-                                    ) {
-                                        val weatherDay = list.getJSONObject(i)
-                                        mainDataObject = weatherDay.getJSONObject("main")
-                                        windDataObject = weatherDay.getJSONObject("wind")
-                                        break
-                                    }
-                                }
-                                if (mainDataObject != null) {
-                                    val temperature = mainDataObject.getDouble("temp")
-                                    weatherText = when (weatherDegree) {
-                                        1 -> // celsius
-                                            "$temperature °C"
-                                        2 -> // fahrenheit
-                                            String.format(
-                                                "%.1f",
-                                                weather.convertCelsiusToFahrenheit(temperature)
-                                            ).replace(
-                                                ',', '.'
-                                            ) + " °F"
-                                        else -> // celsius and fahrenheit
-                                            "$temperature °C / " + String.format(
-                                                "%.1f",
-                                                weather.convertCelsiusToFahrenheit(temperature)
-                                            ).replace(
-                                                ',', '.'
-                                            ) + " °F"
-                                    }
+                                val mainDataObject = dayJSON.getJSONObject("main")
+                                val windDataObject = dayJSON.getJSONObject("wind")
 
-                                    val speed = windDataObject!!.getDouble("speed")
-                                    speedText =
-                                        context.getString(R.string.wind) + " = " + String.format(
-                                            "%.1f",
-                                            speed
-                                        ).replace(
-                                            ',', '.'
-                                        ) + " " + context.getString(R.string.meter_sec)
+                                val weather = Weather(
+                                    mainDataObject.getDouble("temp"),
+                                    windDataObject.getDouble("speed"),
+                                    mainDataObject.getDouble("humidity")
+                                )
 
-                                    val humidity = mainDataObject.getDouble("humidity")
-                                    humidityText =
-                                        context.getString(R.string.humidity) + " = " + humidity.toString() + "%"
+                                // переход на главную страницу приложения по клику
+                                val intent = Intent(context, MainActivity::class.java)
+                                val pendingIntent =
+                                    PendingIntent.getActivity(context, 0, intent, 0)
 
-                                    // переход на главную страницу приложения по клику
-                                    val intent = Intent(context, MainActivity::class.java)
-                                    val pendingIntent =
-                                        PendingIntent.getActivity(context, 0, intent, 0)
-
-                                    val views =
-                                        RemoteViews(context.packageName, R.layout.app_widget)
-                                    views.setTextViewText(R.id.appwidget_text_weather, weatherText)
-                                    views.setTextViewText(R.id.appwidget_text_city, city)
-                                    views.setViewVisibility(R.id.appwidget_text_city, View.VISIBLE)
-                                    views.setTextViewText(R.id.appwidget_text_speed, speedText)
-                                    views.setTextViewText(
-                                        R.id.appwidget_text_humidity,
-                                        humidityText
+                                val views =
+                                    RemoteViews(context.packageName, R.layout.app_widget)
+                                views.setTextViewText(
+                                    R.id.appwidget_text_weather,
+                                    DataModel.title(weatherDegree, weather)
+                                )
+                                views.setTextViewText(R.id.appwidget_text_city, city)
+                                views.setViewVisibility(
+                                    R.id.appwidget_text_city,
+                                    View.VISIBLE
+                                )
+                                views.setTextViewText(
+                                    R.id.appwidget_text_speed,
+                                    DataModel.infoWindSpeed(context, weather.windSpeed)
+                                )
+                                views.setTextViewText(
+                                    R.id.appwidget_text_humidity,
+                                    DataModel.infoHumidity(context, weather.humidity)
+                                )
+                                if (appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(
+                                        OPTION_APPWIDGET_MIN_WIDTH
+                                    ) > 250
+                                ) {
+                                    views.setViewVisibility(
+                                        R.id.widget_layout_weather_data,
+                                        View.VISIBLE
                                     )
-                                    if (appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(
-                                            OPTION_APPWIDGET_MIN_WIDTH
-                                        ) > 250
-                                    ) {
-                                        views.setViewVisibility(
-                                            R.id.widget_layout_weather_data,
-                                            View.VISIBLE
-                                        )
-                                        views.setViewVisibility(
-                                            R.id.widget_layout_line,
-                                            View.VISIBLE
-                                        )
-                                        views.setViewVisibility(
-                                            R.id.appwidget_text_speed,
-                                            View.VISIBLE
-                                        )
-                                        views.setViewVisibility(
-                                            R.id.appwidget_text_humidity,
-                                            View.VISIBLE
-                                        )
-                                    } else {
-                                        views.setViewVisibility(
-                                            R.id.widget_layout_weather_data,
-                                            View.GONE
-                                        )
-                                        views.setViewVisibility(
-                                            R.id.widget_layout_line,
-                                            View.GONE
-                                        )
-                                        views.setViewVisibility(
-                                            R.id.appwidget_text_speed,
-                                            View.GONE
-                                        )
-                                        views.setViewVisibility(
-                                            R.id.appwidget_text_humidity,
-                                            View.GONE
-                                        )
-                                    }
-                                    views.setOnClickPendingIntent(R.id.layout_widget, pendingIntent)
-                                    appWidgetManager.updateAppWidget(appWidgetId, views)
-                                    hasLoadedData = true
+                                    views.setViewVisibility(
+                                        R.id.widget_layout_line,
+                                        View.VISIBLE
+                                    )
+                                    views.setViewVisibility(
+                                        R.id.appwidget_text_speed,
+                                        View.VISIBLE
+                                    )
+                                    views.setViewVisibility(
+                                        R.id.appwidget_text_humidity,
+                                        View.VISIBLE
+                                    )
+                                } else {
+                                    views.setViewVisibility(
+                                        R.id.widget_layout_weather_data,
+                                        View.GONE
+                                    )
+                                    views.setViewVisibility(
+                                        R.id.widget_layout_line,
+                                        View.GONE
+                                    )
+                                    views.setViewVisibility(
+                                        R.id.appwidget_text_speed,
+                                        View.GONE
+                                    )
+                                    views.setViewVisibility(
+                                        R.id.appwidget_text_humidity,
+                                        View.GONE
+                                    )
                                 }
+                                views.setOnClickPendingIntent(
+                                    R.id.layout_widget,
+                                    pendingIntent
+                                )
+                                appWidgetManager.updateAppWidget(appWidgetId, views)
+                                hasLoadedData = true
                             }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
                     }
                 }
