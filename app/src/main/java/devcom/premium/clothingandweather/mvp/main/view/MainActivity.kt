@@ -10,12 +10,16 @@ import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
+import com.squareup.picasso.Picasso
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.common.Weather
 import devcom.premium.clothingandweather.mvp.main.presenter.IMainPresenter
 import devcom.premium.clothingandweather.mvp.main.presenter.MainPresenter
+import devcom.premium.clothingandweather.mvp.model.DataModel
 import kotlinx.android.synthetic.main.activity_main.*
+import java.net.URL
 
 class MainActivity : AppCompatActivity(), IMainView {
 
@@ -47,8 +51,7 @@ class MainActivity : AppCompatActivity(), IMainView {
     override fun showDefaultModel() {
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         val sex = sharedPref.getString("sex", "0")
-        if (sex == "0") model.setImageResource(R.drawable.man_default)
-        else if (sex == "1") model.setImageResource(R.drawable.woman_default)
+        loadModel(if (sex == "0") R.drawable.man_default else R.drawable.woman_default)
     }
 
     override fun switchInfoVisible(isCanVisible: Boolean) {
@@ -66,11 +69,8 @@ class MainActivity : AppCompatActivity(), IMainView {
     }
 
     override fun setTextInfo(weather: Weather) {
-        val textSpeed = getString(R.string.wind) + " = " +
-                weather.windSpeed + " " + getString(R.string.meter_sec)
-        val textHumidity = getString(R.string.humidity) + " = " + weather.humidity.toString() + "%"
-        textView_speed.text = textSpeed
-        textView_humidity.text = textHumidity
+        textView_speed.text = DataModel.infoWindSpeed(this, weather.windSpeed)
+        textView_humidity.text = DataModel.infoHumidity(this, weather.humidity)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -99,5 +99,13 @@ class MainActivity : AppCompatActivity(), IMainView {
     override fun launchActivity(targetClass: Class<*>) {
         val intent = Intent(this, targetClass)
         startActivity(intent)
+    }
+
+    override fun loadIcon(urlIcon: URL) {
+        Picasso.get().load(urlIcon.toString()).into(imageView_icon)
+    }
+
+    override fun loadModel(@DrawableRes id: Int) {
+        model.setImageResource(id)
     }
 }

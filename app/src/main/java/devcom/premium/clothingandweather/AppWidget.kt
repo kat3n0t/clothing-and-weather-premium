@@ -15,9 +15,8 @@ import android.widget.RemoteViews
 import devcom.premium.clothingandweather.common.Weather
 import devcom.premium.clothingandweather.data.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.MainActivity
+import devcom.premium.clothingandweather.mvp.model.DataModel
 import org.json.JSONObject
-import java.text.SimpleDateFormat
-import java.util.*
 
 class AppWidget : AppWidgetProvider() {
 
@@ -33,16 +32,13 @@ class AppWidget : AppWidgetProvider() {
     companion object {
         var hasLoadedData: Boolean = false
         private var handler: Handler = Handler()
-        private var weatherText = ""
-        private var speedText = ""
-        private var humidityText = ""
 
         internal fun updateAppWidget(
             context: Context, appWidgetManager: AppWidgetManager,
             appWidgetId: Int
         ) {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-            val city = sharedPref.getString("city", "Kemerovo, RU")
+            val city = sharedPref.getString("city", "Kemerovo, RU")!!
             val weatherDegree = sharedPref.getString("degree", "0").toInt()
 
             object : Thread() {
@@ -56,60 +52,17 @@ class AppWidget : AppWidgetProvider() {
                                 ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
                             handler.post {
-                                var mainDataObject: JSONObject? = null
-                                var windDataObject: JSONObject? = null
+                                val dayJSON = DataModel.weatherDay(json, 1)
+                                    ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
-                                val list = json.getJSONArray("list")
-                                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                                val currentDate = dateFormat.format(Calendar.getInstance().time)
-                                for (i in 1 until json.getInt("cnt") - 1) {
-                                    if (list.getJSONObject(i).getString("dt_txt").contains("$currentDate 1") or
-                                        list.getJSONObject(i).getString("dt_txt").contains("$currentDate 2")
-                                    ) {
-                                        val weatherDay = list.getJSONObject(i)
-                                        mainDataObject = weatherDay.getJSONObject("main")
-                                        windDataObject = weatherDay.getJSONObject("wind")
-                                        break
-                                    }
-                                }
-                                if ((mainDataObject == null) || (windDataObject == null))
-                                    throw Exception(context.getString(R.string.weather_data_not_found))
+                                val mainDataObject = dayJSON.getJSONObject("main")
+                                val windDataObject = dayJSON.getJSONObject("wind")
 
                                 val weather = Weather(
                                     mainDataObject.getDouble("temp"),
                                     windDataObject.getDouble("speed"),
                                     mainDataObject.getDouble("humidity")
                                 )
-
-                                speedText =
-                                    context.getString(R.string.wind) + " = " + String.format(
-                                        "%.1f",
-                                        weather.windSpeed
-                                    ).replace(
-                                        ',', '.'
-                                    ) + " " + context.getString(R.string.meter_sec)
-
-                                humidityText =
-                                    context.getString(R.string.humidity) + " = " + weather.humidity.toString() + "%"
-
-                                weatherText = when (weatherDegree) {
-                                    1 -> // celsius
-                                        "${weather.temperatureCelsius} °C"
-                                    2 -> // fahrenheit
-                                        String.format(
-                                            "%.1f",
-                                            weather.temperatureFahrenheit
-                                        ).replace(
-                                            ',', '.'
-                                        ) + " °F"
-                                    else -> // celsius and fahrenheit
-                                        "${weather.temperatureCelsius} °C / " + String.format(
-                                            "%.1f",
-                                            weather.temperatureFahrenheit
-                                        ).replace(
-                                            ',', '.'
-                                        ) + " °F"
-                                }
 
                                 // переход на главную страницу приложения по клику
                                 val intent = Intent(context, MainActivity::class.java)
@@ -120,17 +73,20 @@ class AppWidget : AppWidgetProvider() {
                                     RemoteViews(context.packageName, R.layout.app_widget)
                                 views.setTextViewText(
                                     R.id.appwidget_text_weather,
-                                    weatherText
+                                    DataModel.title(weatherDegree, weather)
                                 )
                                 views.setTextViewText(R.id.appwidget_text_city, city)
                                 views.setViewVisibility(
                                     R.id.appwidget_text_city,
                                     View.VISIBLE
                                 )
-                                views.setTextViewText(R.id.appwidget_text_speed, speedText)
+                                views.setTextViewText(
+                                    R.id.appwidget_text_speed,
+                                    DataModel.infoWindSpeed(context, weather.windSpeed)
+                                )
                                 views.setTextViewText(
                                     R.id.appwidget_text_humidity,
-                                    humidityText
+                                    DataModel.infoHumidity(context, weather.humidity)
                                 )
                                 if (appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(
                                         OPTION_APPWIDGET_MIN_WIDTH
@@ -178,7 +134,7 @@ class AppWidget : AppWidgetProvider() {
                                 hasLoadedData = true
                             }
                         } catch (e: Exception) {
-
+                            e.printStackTrace()
                         }
                     }
                 }
