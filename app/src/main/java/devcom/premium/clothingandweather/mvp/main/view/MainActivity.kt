@@ -12,7 +12,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
-import com.squareup.picasso.Picasso
+import com.bumptech.glide.Glide
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.common.Weather
 import devcom.premium.clothingandweather.mvp.main.presenter.IMainPresenter
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity(), IMainView {
     }
 
     override fun loadIcon(urlIcon: URL) {
-        Picasso.get().load(urlIcon.toString()).into(imageView_icon)
+        Glide.with(this).load(urlIcon.toString()).into(imageView_icon)
     }
 
     override fun loadModel(@DrawableRes id: Int) {
