@@ -58,7 +58,7 @@ class MainPresenter(@NonNull private val activity: MainActivity) : IMainPresente
                         activity.setTitle(R.string.loading)
 
                         val weatherApi = WeatherApi(city)
-                        val json: JSONObject = weatherApi.jsonObject(weatherDate)
+                        val json: JSONObject = weatherApi.data(weatherDate)
                             ?: throw Exception(activity.getString(R.string.weather_data_not_found))
 
                         handler.post {

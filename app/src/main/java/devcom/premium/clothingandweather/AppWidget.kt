@@ -48,7 +48,7 @@ class AppWidget : AppWidgetProvider() {
                     if (cm.activeNetworkInfo.isConnected) {
                         try {
                             val weatherApi = WeatherApi(city)
-                            val json: JSONObject = weatherApi.jsonObject(1)
+                            val json: JSONObject = weatherApi.data(1)
                                 ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
                             handler.post {

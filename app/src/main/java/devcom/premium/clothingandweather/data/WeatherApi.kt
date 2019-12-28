@@ -20,43 +20,24 @@ private const val OWM_APP_ID = "a504db88a71fcc06534c4a94f415d98a"
  */
 class WeatherApi(private val city: String) {
 
-    fun jsonObject(@WeatherType type: Int) =
-        if (type in WeatherType.all)
-            getWeatherJSON(weatherUrl(type))
-        else
-            null
-
-    private fun getWeatherJSON(url: URL?): JSONObject? {
-        if (url != null) {
-            val connection: HttpURLConnection? = urlConnection(url)
-            if (connection != null) {
-                try {
-                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
-
-                    val json = StringBuffer(1024)
-                    var tmp: String?
-                    do {
-                        tmp = reader.readLine()
-                        if (tmp == null)
-                            break
-                        json.append(tmp).append("\n")
-                    } while (true)
-                    reader.close()
-
-                    val data = JSONObject(json.toString())
-                    return if (isCorrectData(data)) {
-                        return data
-                    } else null
-                } catch (e: Exception) {
-                    return null
-                } finally {
-                    connection.disconnect()
-                }
-            } else return null
-        } else return null
+    /**
+     * Возвращает [JSONObject] по типу погоды, если есть
+     *
+     * @param type тип погоды
+     * @return [JSONObject]
+     */
+    fun data(@WeatherType type: Int): JSONObject? {
+        val url = dataUrl(type)
+        return if (url != null) jsonObject(url) else null
     }
 
-    private fun weatherUrl(@WeatherType type: Int): URL? {
+    /**
+     * Возвращает [URL] по типу погоды, если есть
+     *
+     * @param type тип погоды
+     * @return [URL]
+     */
+    private fun dataUrl(@WeatherType type: Int): URL? {
         return if (type in WeatherType.all) {
             val linkPart =
                 if (type in WeatherType.allForecast)
@@ -69,8 +50,46 @@ class WeatherApi(private val city: String) {
             null
     }
 
-    fun iconUrl(imgId: String) : Uri = Uri.parse("$OWM_LINK$OWN_IMG$imgId.png")
+    /**
+     * Возвращает [JSONObject] по ссылке, если есть
+     *
+     * @param url ссылка
+     * @return [JSONObject]
+     */
+    private fun jsonObject(url: URL): JSONObject? {
+        val connection: HttpURLConnection? = urlConnection(url)
+        if (connection != null) {
+            try {
+                val reader = BufferedReader(InputStreamReader(connection.inputStream))
 
+                val json = StringBuffer(1024)
+                var tmp: String?
+                do {
+                    tmp = reader.readLine()
+                    if (tmp == null)
+                        break
+                    json.append(tmp).append("\n")
+                } while (true)
+                reader.close()
+
+                val data = JSONObject(json.toString())
+                return if (isCorrectData(data)) {
+                    return data
+                } else null
+            } catch (e: Exception) {
+                return null
+            } finally {
+                connection.disconnect()
+            }
+        } else return null
+    }
+
+    /**
+     * Возвращает соединение по ссылке, если есть
+     *
+     * @param url ссылка
+     * @return [HttpURLConnection]
+     */
     private fun urlConnection(url: URL): HttpURLConnection? {
         return try {
             val connection: HttpURLConnection? = url.openConnection() as HttpURLConnection
@@ -84,9 +103,18 @@ class WeatherApi(private val city: String) {
     }
 
     /**
-     * Проверка полученных данных
+     * Проверяет получаемые данные
+     *
      * @param data объект данных
      * @return true, если данные не повреждены
      */
     private fun isCorrectData(data: JSONObject) = data.getInt("cod") == 200
+
+    /**
+     * Возвращает ссылку на иконку по идентификатору
+     *
+     * @param imgId идентификатор иконки
+     * @return ссылка на иконку
+     */
+    fun iconUrl(imgId: String): Uri = Uri.parse("$OWM_LINK$OWN_IMG$imgId.png")
 }
