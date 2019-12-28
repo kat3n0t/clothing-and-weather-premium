@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.Menu
@@ -19,7 +20,6 @@ import devcom.premium.clothingandweather.mvp.main.presenter.IMainPresenter
 import devcom.premium.clothingandweather.mvp.main.presenter.MainPresenter
 import devcom.premium.clothingandweather.mvp.model.DataModel
 import kotlinx.android.synthetic.main.activity_main.*
-import java.net.URL
 
 class MainActivity : AppCompatActivity(), IMainView {
 
@@ -101,8 +101,8 @@ class MainActivity : AppCompatActivity(), IMainView {
         startActivity(intent)
     }
 
-    override fun loadIcon(urlIcon: URL) {
-        Glide.with(this).load(urlIcon.toString()).into(imageView_icon)
+    override fun loadIcon(iconUri: Uri) {
+        Glide.with(this).load(iconUri).into(imageView_icon)
     }
 
     override fun loadModel(@DrawableRes id: Int) {

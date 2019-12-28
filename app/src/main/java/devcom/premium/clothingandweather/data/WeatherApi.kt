@@ -1,5 +1,6 @@
 package devcom.premium.clothingandweather.data
 
+import android.net.Uri
 import devcom.premium.clothingandweather.common.WeatherType
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -68,7 +69,7 @@ class WeatherApi(private val city: String) {
             null
     }
 
-    fun iconUrl(imgId: String) = URL("$OWM_LINK$OWN_IMG$imgId.png")
+    fun iconUrl(imgId: String) : Uri = Uri.parse("$OWM_LINK$OWN_IMG$imgId.png")
 
     private fun urlConnection(url: URL): HttpURLConnection? {
         return try {
