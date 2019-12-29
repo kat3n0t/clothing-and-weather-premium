@@ -5,25 +5,26 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.DrawableRes
-import androidx.appcompat.app.AppCompatActivity
-import com.squareup.picasso.Picasso
+import com.bumptech.glide.Glide
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.common.Weather
-import devcom.premium.clothingandweather.mvp.main.presenter.IMainPresenter
 import devcom.premium.clothingandweather.mvp.main.presenter.MainPresenter
 import devcom.premium.clothingandweather.mvp.model.DataModel
 import kotlinx.android.synthetic.main.activity_main.*
-import java.net.URL
+import moxy.MvpAppCompatActivity
+import moxy.presenter.InjectPresenter
 
-class MainActivity : AppCompatActivity(), IMainView {
+class MainActivity : MvpAppCompatActivity(), IMainView {
 
-    private val presenter: IMainPresenter = MainPresenter(this)
+    @InjectPresenter
+    internal lateinit var presenter: MainPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.CawTheme) // переход от темы .Launcher к обычной теме приложения
@@ -43,11 +44,6 @@ class MainActivity : AppCompatActivity(), IMainView {
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
-    override fun onStart() {
-        super.onStart()
-        presenter.onStart()
-    }
-
     override fun showDefaultModel() {
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         val sex = sharedPref.getString("sex", "0")
@@ -62,7 +58,15 @@ class MainActivity : AppCompatActivity(), IMainView {
         imageView_icon.visibility = visibility
     }
 
-    fun isNetworkAvailable(): Boolean {
+    override fun updateAPIConnection() {
+        if (canNetworkAvailable()) {
+            presenter.updateAPIConnection(this)
+        } else {
+            setTitle(R.string.waiting_for_network)
+        }
+    }
+
+    private fun canNetworkAvailable(): Boolean {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = cm.activeNetworkInfo
         return networkInfo != null && networkInfo.isConnected
@@ -81,7 +85,7 @@ class MainActivity : AppCompatActivity(), IMainView {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.navigation_btnRefresh -> {
-                presenter.updateAPIConnection()
+                updateAPIConnection()
                 true
             }
             R.id.navigation_btnPreferences -> {
@@ -101,8 +105,8 @@ class MainActivity : AppCompatActivity(), IMainView {
         startActivity(intent)
     }
 
-    override fun loadIcon(urlIcon: URL) {
-        Picasso.get().load(urlIcon.toString()).into(imageView_icon)
+    override fun loadIcon(iconUri: Uri) {
+        Glide.with(this).load(iconUri).into(imageView_icon)
     }
 
     override fun loadModel(@DrawableRes id: Int) {
