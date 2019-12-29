@@ -39,7 +39,7 @@ class AppWidget : AppWidgetProvider() {
         ) {
             val cm =
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            if (!cm.activeNetworkInfo.isConnected) {
+            if ((cm.activeNetworkInfo == null) or (!cm.activeNetworkInfo.isConnected)) {
                 return
             }
 
