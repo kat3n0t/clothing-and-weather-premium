@@ -61,13 +61,13 @@ class MainPresenter : MvpPresenter<IMainView>() {
         object : Thread() {
             override fun run() {
                 try {
-                    activity.setTitle(R.string.loading)
-
                     val weatherApi = WeatherApi(city)
                     val json: JSONObject = weatherApi.data(weatherDate)
                         ?: throw Exception(activity.getString(R.string.weather_data_not_found))
 
                     handler.post {
+                        activity.setTitle(R.string.loading)
+
                         val dayJSON: JSONObject = DataModel.weatherDay(json, weatherDate)
                             ?: throw Exception(activity.getString(R.string.weather_data_not_found))
 
@@ -93,7 +93,7 @@ class MainPresenter : MvpPresenter<IMainView>() {
                         viewState.switchInfoVisible(true)
                     }
                 } catch (e: Exception) {
-                    activity.title = e.message
+                    e.printStackTrace()
                     activity.prBar.visibility = View.GONE
                     viewState.switchInfoVisible(false)
                 }
