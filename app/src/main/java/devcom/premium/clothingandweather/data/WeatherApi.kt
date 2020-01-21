@@ -8,7 +8,7 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-private const val OWM_LINK = "http://api.openweathermap.org/"
+private const val OWM_LINK = "https://api.openweathermap.org/"
 private const val OWN_DATA = "data/2.5/"
 private const val OWN_IMG = "img/w/"
 private const val OWM_TYPE_WEATHER = "weather"
