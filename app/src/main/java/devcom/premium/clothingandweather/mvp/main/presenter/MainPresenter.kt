@@ -44,6 +44,11 @@ class MainPresenter : MvpPresenter<IMainView>() {
         viewState.launchActivity(SettingsActivity::class.java)
     }
 
+    override fun detachView(view: IMainView?) {
+        handler.removeCallbacksAndMessages(null)
+        super.detachView(view)
+    }
+
     fun updateAPIConnection(activity: MainActivity) {
         viewState.switchInfoVisible(false)
         activity.prBar.visibility = View.VISIBLE
