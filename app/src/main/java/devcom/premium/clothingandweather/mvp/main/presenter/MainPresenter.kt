@@ -98,9 +98,14 @@ class MainPresenter : MvpPresenter<IMainView>() {
                         viewState.switchInfoVisible(true)
                     }
                 } catch (e: Exception) {
-                    e.printStackTrace()
-                    activity.prBar.visibility = View.GONE
-                    viewState.switchInfoVisible(false)
+                    handler.removeCallbacksAndMessages(null)
+                    handler.post {
+                        activity.prBar.visibility = View.GONE
+                        viewState.switchInfoVisible(false)
+                        if (e.message.equals(activity.getString(R.string.weather_data_not_found))) {
+                            activity.title = e.message
+                        }
+                    }
                 }
             }
         }.start()
