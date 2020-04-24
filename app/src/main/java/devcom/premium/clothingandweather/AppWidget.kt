@@ -45,7 +45,7 @@ class AppWidget : AppWidgetProvider() {
 
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
             val city = sharedPref.getString("city", "Kemerovo, RU")!!
-            val weatherDegree = sharedPref.getString("degree", "0").toInt()
+            val weatherDegree = sharedPref.getString("degree", "0")!!.toInt()
 
             object : Thread() {
                 override fun run() {
@@ -67,11 +67,6 @@ class AppWidget : AppWidgetProvider() {
                                 mainDataObject.getDouble("humidity")
                             )
 
-                            // переход на главную страницу приложения по клику
-                            val intent = Intent(context, MainActivity::class.java)
-                            val pendingIntent =
-                                PendingIntent.getActivity(context, 0, intent, 0)
-
                             val views =
                                 RemoteViews(context.packageName, R.layout.app_widget)
                             views.setTextViewText(
@@ -79,10 +74,7 @@ class AppWidget : AppWidgetProvider() {
                                 DataModel.title(weatherDegree, weather)
                             )
                             views.setTextViewText(R.id.appwidget_text_city, city)
-                            views.setViewVisibility(
-                                R.id.appwidget_text_city,
-                                View.VISIBLE
-                            )
+                            views.setViewVisibility(R.id.appwidget_text_city, View.VISIBLE)
                             views.setTextViewText(
                                 R.id.appwidget_text_speed,
                                 DataModel.infoWindSpeed(context, weather.windSpeed)
@@ -91,48 +83,23 @@ class AppWidget : AppWidgetProvider() {
                                 R.id.appwidget_text_humidity,
                                 DataModel.infoHumidity(context, weather.humidity)
                             )
-                            if (appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(
-                                    OPTION_APPWIDGET_MIN_WIDTH
-                                ) > 250
-                            ) {
-                                views.setViewVisibility(
-                                    R.id.widget_layout_weather_data,
-                                    View.VISIBLE
-                                )
-                                views.setViewVisibility(
-                                    R.id.widget_layout_line,
-                                    View.VISIBLE
-                                )
-                                views.setViewVisibility(
-                                    R.id.appwidget_text_speed,
-                                    View.VISIBLE
-                                )
-                                views.setViewVisibility(
-                                    R.id.appwidget_text_humidity,
-                                    View.VISIBLE
-                                )
+
+                            val bundle = appWidgetManager.getAppWidgetOptions(appWidgetId)
+                            val visibility = if (bundle.getInt(OPTION_APPWIDGET_MIN_WIDTH) > 250) {
+                                View.VISIBLE
                             } else {
-                                views.setViewVisibility(
-                                    R.id.widget_layout_weather_data,
-                                    View.GONE
-                                )
-                                views.setViewVisibility(
-                                    R.id.widget_layout_line,
-                                    View.GONE
-                                )
-                                views.setViewVisibility(
-                                    R.id.appwidget_text_speed,
-                                    View.GONE
-                                )
-                                views.setViewVisibility(
-                                    R.id.appwidget_text_humidity,
-                                    View.GONE
-                                )
+                                View.GONE
                             }
-                            views.setOnClickPendingIntent(
-                                R.id.layout_widget,
-                                pendingIntent
-                            )
+                            views.setViewVisibility(R.id.widget_layout_weather_data, visibility)
+                            views.setViewVisibility(R.id.widget_layout_line, visibility)
+                            views.setViewVisibility(R.id.appwidget_text_speed, visibility)
+                            views.setViewVisibility(R.id.appwidget_text_humidity, visibility)
+
+                            // переход на главную страницу приложения по клику
+                            val intent = Intent(context, MainActivity::class.java)
+                            val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+                            views.setOnClickPendingIntent(R.id.layout_widget, pendingIntent)
+
                             appWidgetManager.updateAppWidget(appWidgetId, views)
                             hasLoadedData = true
                         }

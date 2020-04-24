@@ -13,16 +13,12 @@ class LocationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_location)
-        setupActionBar()
-    }
-
-    private fun setupActionBar() {
-        val actionBar = supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onStart() {
         super.onStart()
+        btnCheck.setOnClickListener { onSaveLocation() }
         showCurrentCity()
     }
 
@@ -36,23 +32,31 @@ class LocationActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * Отображает текущий город
+     */
     private fun showCurrentCity() {
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
         val city = sharedPref.getString("city", "Kemerovo, RU")
-        textViewActiveCity.text = city
+        tvActiveCity.text = city
     }
 
-    // Обрабатываем нажатие на кнопку сохранения
-    fun onSaveLocation(@Suppress("UNUSED_PARAMETER") view: View) {
-        textViewCheck.visibility = View.GONE
-        val text = editTextCity.text.toString()
+    /**
+     * Обрабатывает нажатие на кнопку сохранения
+     */
+    private fun onSaveLocation() {
+        tvCheck.visibility = View.GONE
+        val text = etCity.text.toString()
         if (text != "") {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
             sharedPref.edit().putString("city", transformTextFirstCharToUpperCase(text)).apply()
             showCurrentCity()
-        } else textViewCheck.visibility = View.VISIBLE
+        } else tvCheck.visibility = View.VISIBLE
     }
 
+    /**
+     * Делает первую букву текста заглавной
+     */
     private fun transformTextFirstCharToUpperCase(text: String) = if (text != "") {
         text.substring(0, 1).toUpperCase() + text.substring(1)
     } else ""
