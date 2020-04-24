@@ -2,6 +2,7 @@ package devcom.premium.clothingandweather.mvp.model
 
 import android.content.Context
 import devcom.premium.clothingandweather.R
+import devcom.premium.clothingandweather.common.Degree
 import devcom.premium.clothingandweather.common.Weather
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -11,22 +12,22 @@ object DataModel {
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
-    fun title(weatherDegree: Int, weather: Weather) =
+    /**
+     * Возвращает заголовок приложения с данными о погоде
+     *
+     * @param weatherDegree [Degree]
+     * @param weather данные о погоде
+     * @return заголовок приложения
+     */
+    fun title(@Degree weatherDegree: Int, weather: Weather) =
         when (weatherDegree) {
-            1 -> // celsius
-                "${weather.temperatureCelsius} °C"
-            2 -> // fahrenheit
-                String.format(
-                    "%.1f",
-                    weather.temperatureFahrenheit
-                ).replace(',', '.') + " °F"
-            else -> // celsius and fahrenheit
-                "${weather.temperatureCelsius} °C / " + String.format(
-                    "%.1f",
-                    weather.temperatureFahrenheit
-                ).replace(
-                    ',', '.'
-                ) + " °F"
+            Degree.CELSIUS -> "${weather.temperatureCelsius} °C"
+            Degree.FAHRENHEIT ->
+                String.format("%.1f", weather.temperatureFahrenheit)
+                    .replace(',', '.') + " °F"
+            else -> "${weather.temperatureCelsius} °C / " +
+                    String.format("%.1f", weather.temperatureFahrenheit)
+                        .replace(',', '.') + " °F"
         }
 
     fun infoWindSpeed(context: Context, wind: Double) =
