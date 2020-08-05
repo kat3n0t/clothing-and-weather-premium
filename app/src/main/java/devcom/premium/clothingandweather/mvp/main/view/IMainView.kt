@@ -7,12 +7,12 @@ import moxy.MvpView
 import moxy.viewstate.strategy.SkipStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
+@StateStrategyType(SkipStrategy::class)
 interface IMainView : MvpView {
 
     /**
      * Отображает стандартную модель персонажа
      */
-    @StateStrategyType(SkipStrategy::class)
     fun showDefaultModel()
 
     /**
@@ -20,7 +20,6 @@ interface IMainView : MvpView {
      *
      * @param isCanVisible истина, если нужно отобразить инфу
      */
-    @StateStrategyType(SkipStrategy::class)
     fun switchInfoVisible(isCanVisible: Boolean)
 
     /**
@@ -28,7 +27,6 @@ interface IMainView : MvpView {
      *
      * @param weather данные
      */
-    @StateStrategyType(SkipStrategy::class)
     fun setTextInfo(weather: Weather)
 
     /**
@@ -36,7 +34,6 @@ interface IMainView : MvpView {
      *
      * @param targetClass класс целевой активности
      */
-    @StateStrategyType(SkipStrategy::class)
     fun launchActivity(targetClass: Class<*>)
 
     /**
@@ -44,7 +41,6 @@ interface IMainView : MvpView {
      *
      * @param iconUri ссылка на иконку
      */
-    @StateStrategyType(SkipStrategy::class)
     fun loadIcon(iconUri: Uri)
 
     /**
@@ -52,12 +48,10 @@ interface IMainView : MvpView {
      *
      * @param id [DrawableRes]
      */
-    @StateStrategyType(SkipStrategy::class)
     fun loadModel(@DrawableRes id: Int)
 
     /**
      * Обновляет погодные данные
      */
-    @StateStrategyType(SkipStrategy::class)
     fun updateWeatherData()
 }
