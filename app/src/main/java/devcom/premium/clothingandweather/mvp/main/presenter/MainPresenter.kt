@@ -33,13 +33,19 @@ class MainPresenter : MvpPresenter<IMainView>() {
 
     override fun attachView(view: IMainView?) {
         super.attachView(view)
-        viewState.updateAPIConnection()
+        viewState.updateWeatherData()
     }
 
+    /**
+     * Обрабатывает нажатие на пункт меню с местоположением
+     */
     fun onLaunchLocation() {
         viewState.launchActivity(LocationActivity::class.java)
     }
 
+    /**
+     * Обрабатывает нажатие на пункт меню с настройками
+     */
     fun onLaunchPreferences() {
         viewState.launchActivity(SettingsActivity::class.java)
     }
@@ -49,6 +55,9 @@ class MainPresenter : MvpPresenter<IMainView>() {
         super.detachView(view)
     }
 
+    /**
+     * Обрабатывает при обновлении соединения
+     */
     fun updateAPIConnection(activity: MainActivity) {
         viewState.switchInfoVisible(false)
         activity.prBar.visibility = View.VISIBLE

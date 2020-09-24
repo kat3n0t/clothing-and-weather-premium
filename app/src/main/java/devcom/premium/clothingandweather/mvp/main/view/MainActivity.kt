@@ -33,6 +33,9 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
         setContentView(R.layout.activity_main)
     }
 
+    /**
+     * Устанавливает ориентацию экрана
+     */
     private fun setOrientation() {
         requestedOrientation = if (resources.configuration.screenLayout
             and Configuration.SCREENLAYOUT_SIZE_MASK == Configuration.SCREENLAYOUT_SIZE_LARGE ||
@@ -58,7 +61,7 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
         imageView_icon.visibility = visibility
     }
 
-    override fun updateAPIConnection() {
+    override fun updateWeatherData() {
         if (canNetworkAvailable()) {
             presenter.updateAPIConnection(this)
         } else {
@@ -66,6 +69,11 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
         }
     }
 
+    /**
+     * Проверяет доступ к интернету
+     *
+     * @return истина, если есть интернет
+     */
     private fun canNetworkAvailable(): Boolean {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = cm.activeNetworkInfo
@@ -85,7 +93,7 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.navigation_btnRefresh -> {
-                updateAPIConnection()
+                updateWeatherData()
                 true
             }
             R.id.navigation_btnPreferences -> {

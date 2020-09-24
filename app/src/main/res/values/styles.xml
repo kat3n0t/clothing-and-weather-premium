@@ -10,8 +10,8 @@
         <item name="android:textColorPrimary">@color/colorPrimaryDarkAndText</item>
         <item name="android:textColorPrimaryInverse">@color/colorBackgroundAndText</item>
     </style>
-    
-    <style name="CawTheme.Launcher" parent="CawTheme">
+
+    <style name="CawTheme.Launcher">
         <item name="android:windowBackground">@drawable/app_launcher_splash</item>
     </style>
 </resources>
