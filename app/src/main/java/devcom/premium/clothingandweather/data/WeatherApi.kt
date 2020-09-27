@@ -77,11 +77,12 @@ class WeatherApi(private val city: String) {
                     return data
                 } else null
             } catch (e: Exception) {
-                return null
+                e.printStackTrace()
             } finally {
                 connection.disconnect()
             }
-        } else return null
+        }
+        return null
     }
 
     /**
