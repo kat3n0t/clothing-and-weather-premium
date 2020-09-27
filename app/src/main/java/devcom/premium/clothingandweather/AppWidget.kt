@@ -39,7 +39,7 @@ class AppWidget : AppWidgetProvider() {
             context: Context, appWidgetManager: AppWidgetManager,
             appWidgetId: Int
         ) {
-            if (!isInternetAvailable(context)) {
+            if (!internetAvailable(context)) {
                 return
             }
 
@@ -115,7 +115,7 @@ class AppWidget : AppWidgetProvider() {
          *
          * @param context [Context]
          */
-        private fun isInternetAvailable(context: Context): Boolean {
+        private fun internetAvailable(context: Context): Boolean {
             var result = false
             val connectivityManager =
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
