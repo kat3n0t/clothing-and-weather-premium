@@ -131,6 +131,7 @@ class AppWidget : AppWidgetProvider() {
                 }
             } else {
                 connectivityManager.run {
+                    @Suppress("DEPRECATION")
                     connectivityManager.activeNetworkInfo?.run {
                         result = when (type) {
                             ConnectivityManager.TYPE_WIFI -> true
