@@ -65,12 +65,12 @@ class MainPresenter : MvpPresenter<IMainView>() {
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
 
         val human = Human(
-            sharedPref.getString("sex", "0").toInt(),
-            sharedPref.getString("style", "0").toInt()
+            sharedPref.getString("sex", "0")!!.toInt(),
+            sharedPref.getString("style", "0")!!.toInt()
         )
-        val city: String = sharedPref.getString("city", DEFAULT_CITY)
-        val weatherDegree = sharedPref.getString("degree", "0").toInt()
-        val weatherDate = sharedPref.getString("date", "0").toInt()
+        val city: String = sharedPref.getString("city", DEFAULT_CITY)!!
+        val weatherDegree = sharedPref.getString("degree", "0")!!.toInt()
+        val weatherDate = sharedPref.getString("date", "0")!!.toInt()
 
         object : Thread() {
             override fun run() {
