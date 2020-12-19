@@ -4,6 +4,7 @@ import android.content.Context
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.common.Degree
 import devcom.premium.clothingandweather.common.Weather
+import devcom.premium.clothingandweather.common.WeatherType
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,35 +41,30 @@ object DataModel {
         return dateArray.contains("$date 1") or dateArray.contains("$date 2")
     }
 
-    fun weatherDay(json: JSONObject, weatherDate: Int): JSONObject? {
-        var result: JSONObject? = null
-        when (weatherDate) {
-            1 -> {
+    fun weatherDay(json: JSONObject, type: WeatherType): JSONObject? {
+        when (type) {
+            WeatherType.WEATHER -> return json
+            WeatherType.FORECAST_TODAY -> {
                 val list = json.getJSONArray("list")
                 val currentDate = dateFormat.format(Calendar.getInstance().time)
                 for (i in 1 until json.getInt("cnt") - 1) {
                     if (isWeatherDay(list.getJSONObject(i).getString("dt_txt"), currentDate)) {
-                        result = list.getJSONObject(i)
-                        break
+                        return list.getJSONObject(i)
                     }
                 }
             }
-            2 -> {
+            WeatherType.FORECAST_TOMORROW -> {
                 val list = json.getJSONArray("list")
                 val calendarTomorrow = Calendar.getInstance()
                 calendarTomorrow.add(Calendar.DATE, 1)
                 val tomorrowDate = dateFormat.format(calendarTomorrow.time)
                 for (i in 1 until json.getInt("cnt")) {
                     if (isWeatherDay(list.getJSONObject(i).getString("dt_txt"), tomorrowDate)) {
-                        result = list.getJSONObject(i)
-                        break
+                        return list.getJSONObject(i)
                     }
                 }
             }
-            else -> {
-                result = json
-            }
         }
-        return result
+        return null
     }
 }

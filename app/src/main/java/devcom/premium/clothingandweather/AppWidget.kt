@@ -14,7 +14,9 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.view.View
 import android.widget.RemoteViews
+import devcom.premium.clothingandweather.common.IntExtensions
 import devcom.premium.clothingandweather.common.Weather
+import devcom.premium.clothingandweather.common.WeatherType
 import devcom.premium.clothingandweather.data.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.MainActivity
 import devcom.premium.clothingandweather.mvp.model.DataModel
@@ -45,17 +47,19 @@ class AppWidget : AppWidgetProvider() {
 
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
             val city = sharedPref.getString("city", "Kemerovo, RU")!!
-            val weatherDegree = sharedPref.getString("degree", "0")!!.toInt()
+
+            val weatherDegreePref = sharedPref.getString("degree", "0")!!.toInt()
+            val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
 
             object : Thread() {
                 override fun run() {
                     try {
                         val weatherApi = WeatherApi(city)
-                        val json: JSONObject = weatherApi.data(1)
+                        val json: JSONObject = weatherApi.data(WeatherType.FORECAST_TODAY)
                             ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
                         handler.post {
-                            val dayJSON = DataModel.weatherDay(json, 1)
+                            val dayJSON = DataModel.weatherDay(json, WeatherType.FORECAST_TODAY)
                                 ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
                             val mainDataObject = dayJSON.getJSONObject("main")

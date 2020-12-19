@@ -8,6 +8,7 @@ import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.SettingsActivity
 import devcom.premium.clothingandweather.common.Clothes
 import devcom.premium.clothingandweather.common.Human
+import devcom.premium.clothingandweather.common.IntExtensions
 import devcom.premium.clothingandweather.common.Weather
 import devcom.premium.clothingandweather.data.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.IMainView
@@ -64,25 +65,31 @@ class MainPresenter : MvpPresenter<IMainView>() {
 
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
 
-        val human = Human(
-            sharedPref.getString("sex", "0")!!.toInt(),
-            sharedPref.getString("style", "0")!!.toInt()
-        )
+        val sexPref = sharedPref.getString("sex", "0")!!.toInt()
+        val sex = IntExtensions.toGender(sexPref) ?: return
+
+        val stylePref = sharedPref.getString("style", "0")!!.toInt()
+        val style = IntExtensions.toStyle(stylePref) ?: return
+
+        val weatherDegreePref = sharedPref.getString("degree", "0")!!.toInt()
+        val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
+
+        val weatherTypePref = sharedPref.getString("date", "0")!!.toInt()
+        val weatherType = IntExtensions.toWeatherType(weatherTypePref) ?: return
+
         val city: String = sharedPref.getString("city", DEFAULT_CITY)!!
-        val weatherDegree = sharedPref.getString("degree", "0")!!.toInt()
-        val weatherDate = sharedPref.getString("date", "0")!!.toInt()
 
         object : Thread() {
             override fun run() {
                 try {
                     val weatherApi = WeatherApi(city)
-                    val json: JSONObject = weatherApi.data(weatherDate)
+                    val json: JSONObject = weatherApi.data(weatherType)
                         ?: throw Exception(activity.getString(R.string.weather_data_not_found))
 
                     handler.post {
                         activity.setTitle(R.string.loading)
 
-                        val dayJSON: JSONObject = DataModel.weatherDay(json, weatherDate)
+                        val dayJSON: JSONObject = DataModel.weatherDay(json, weatherType)
                             ?: throw Exception(activity.getString(R.string.weather_data_not_found))
 
                         val mainDataObject = dayJSON.getJSONObject("main")
@@ -96,6 +103,7 @@ class MainPresenter : MvpPresenter<IMainView>() {
                         activity.title = DataModel.title(weatherDegree, weather)
                         viewState.setTextInfo(weather)
 
+                        val human = Human(sex, style)
                         val perceivedTemp = weather.getTemperatureCelsiusPerception()
                         viewState.loadModel(clothes.clothesId(human, perceivedTemp))
 
