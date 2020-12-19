@@ -26,28 +26,20 @@ class WeatherApi(private val city: String) {
      * @param type тип погоды
      * @return [JSONObject]
      */
-    fun data(@WeatherType type: Int): JSONObject? {
+    fun data(type: WeatherType): JSONObject? {
         val url = dataUrl(type)
-        return if (url != null) jsonObject(url) else null
+        return jsonObject(url)
     }
 
     /**
-     * Возвращает [URL] по типу погоды, если есть
+     * Возвращает [URL] по типу погоды
      *
      * @param type тип погоды
      * @return [URL]
      */
-    private fun dataUrl(@WeatherType type: Int): URL? {
-        return if (type in WeatherType.all) {
-            val linkPart =
-                if (type in WeatherType.allForecast)
-                    OWM_TYPE_FORECAST
-                else
-                    OWM_TYPE_WEATHER
-
-            URL("$OWM_LINK$OWN_DATA$linkPart?q=$city&units=metric&APPID=$OWM_APP_ID")
-        } else
-            null
+    private fun dataUrl(type: WeatherType): URL {
+        val linkPart = if (type == WeatherType.WEATHER) OWM_TYPE_WEATHER else OWM_TYPE_FORECAST
+        return URL("$OWM_LINK$OWN_DATA$linkPart?q=$city&units=metric&APPID=$OWM_APP_ID")
     }
 
     /**
