@@ -18,9 +18,23 @@ interface IMainView : MvpView {
     /**
      * Переключает видимость информации
      *
-     * @param isCanVisible истина, если нужно отобразить инфу
+     * @param canVisible истина, если нужно отобразить инфу
      */
-    fun switchInfoVisible(isCanVisible: Boolean)
+    fun switchInfoVisibility(canVisible: Boolean)
+
+    /**
+     * Переключает видимость прогрессбара
+     *
+     * @param canVisible истина, если нужно отобразить прогрессбар
+     */
+    fun switchLoadingVisibility(canVisible: Boolean)
+
+    /**
+     * Устанавливает заголовок
+     *
+     * @param title текст заголовка
+     */
+    fun title(title: String)
 
     /**
      * Конвертирует погодные данные в текст и наполняет представление

@@ -53,12 +53,21 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
         loadModel(if (sex == "0") R.drawable.man_default else R.drawable.woman_default)
     }
 
-    override fun switchInfoVisible(isCanVisible: Boolean) {
-        val visibility = if (isCanVisible) View.VISIBLE else View.INVISIBLE
+    override fun switchInfoVisibility(canVisible: Boolean) {
+        val visibility = if (canVisible) View.VISIBLE else View.INVISIBLE
 
         textView_speed.visibility = visibility
         textView_humidity.visibility = visibility
         imageView_icon.visibility = visibility
+    }
+
+    override fun switchLoadingVisibility(canVisible: Boolean) {
+        val visibility = if (canVisible) View.VISIBLE else View.GONE
+        prBar.visibility = visibility
+    }
+
+    override fun title(title: String) {
+        this.title = title
     }
 
     override fun updateWeatherData() {

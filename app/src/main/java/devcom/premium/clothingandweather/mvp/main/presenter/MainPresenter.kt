@@ -1,8 +1,8 @@
 package devcom.premium.clothingandweather.mvp.main.presenter
 
+import android.content.Context
 import android.os.Handler
 import android.preference.PreferenceManager
-import android.view.View
 import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.SettingsActivity
@@ -12,9 +12,7 @@ import devcom.premium.clothingandweather.common.IntExtensions
 import devcom.premium.clothingandweather.common.Weather
 import devcom.premium.clothingandweather.data.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.IMainView
-import devcom.premium.clothingandweather.mvp.main.view.MainActivity
 import devcom.premium.clothingandweather.mvp.model.DataModel
-import kotlinx.android.synthetic.main.activity_main.*
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import org.json.JSONObject
@@ -59,11 +57,11 @@ class MainPresenter : MvpPresenter<IMainView>() {
     /**
      * Обрабатывает при обновлении соединения
      */
-    fun updateAPIConnection(activity: MainActivity) {
-        viewState.switchInfoVisible(false)
-        activity.prBar.visibility = View.VISIBLE
+    fun updateAPIConnection(context: Context) {
+        viewState.switchInfoVisibility(false)
+        viewState.switchLoadingVisibility(true)
 
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
 
         val sexPref = sharedPref.getString("sex", "0")!!.toInt()
         val sex = IntExtensions.toGender(sexPref) ?: return
@@ -84,13 +82,13 @@ class MainPresenter : MvpPresenter<IMainView>() {
                 try {
                     val weatherApi = WeatherApi(city)
                     val json: JSONObject = weatherApi.data(weatherType)
-                        ?: throw Exception(activity.getString(R.string.weather_data_not_found))
+                        ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
                     handler.post {
-                        activity.setTitle(R.string.loading)
+                        viewState.title(context.getString(R.string.loading))
 
                         val dayJSON: JSONObject = DataModel.weatherDay(json, weatherType)
-                            ?: throw Exception(activity.getString(R.string.weather_data_not_found))
+                            ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
                         val mainDataObject = dayJSON.getJSONObject("main")
                         val windDataObject = dayJSON.getJSONObject("wind")
@@ -100,7 +98,7 @@ class MainPresenter : MvpPresenter<IMainView>() {
                             mainDataObject.getDouble("humidity")
                         )
 
-                        activity.title = DataModel.title(weatherDegree, weather)
+                        viewState.title(DataModel.title(weatherDegree, weather))
                         viewState.setTextInfo(weather)
 
                         val human = Human(sex, style)
@@ -111,16 +109,18 @@ class MainPresenter : MvpPresenter<IMainView>() {
                         val iconName = weatherDataArray.getJSONObject(0).getString("icon")
                         viewState.loadIcon(weatherApi.iconUrl(iconName))
 
-                        activity.prBar.visibility = View.GONE
-                        viewState.switchInfoVisible(true)
+                        viewState.switchLoadingVisibility(false)
+                        viewState.switchInfoVisibility(true)
                     }
                 } catch (e: Exception) {
                     handler.removeCallbacksAndMessages(null)
                     handler.post {
-                        activity.prBar.visibility = View.GONE
-                        viewState.switchInfoVisible(false)
-                        if (e.message.equals(activity.getString(R.string.weather_data_not_found))) {
-                            activity.title = e.message
+                        viewState.switchLoadingVisibility(false)
+                        viewState.switchInfoVisibility(false)
+                        val dataNotFoundException =
+                            context.getString(R.string.weather_data_not_found)
+                        if (e.message.equals(dataNotFoundException)) {
+                            viewState.title(dataNotFoundException)
                         }
                     }
                 }
