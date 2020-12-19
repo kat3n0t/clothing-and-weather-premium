@@ -15,17 +15,17 @@ object DataModel {
     /**
      * Возвращает заголовок приложения с данными о погоде
      *
-     * @param weatherDegree [Degree]
+     * @param degree [Degree]
      * @param weather данные о погоде
      * @return заголовок приложения
      */
-    fun title(@Degree weatherDegree: Int, weather: Weather) =
-        when (weatherDegree) {
+    fun title(degree: Degree, weather: Weather) =
+        when (degree) {
             Degree.CELSIUS -> "${weather.temperatureCelsius} °C"
             Degree.FAHRENHEIT ->
                 String.format("%.1f", weather.temperatureFahrenheit)
                     .replace(',', '.') + " °F"
-            else -> "${weather.temperatureCelsius} °C / " +
+            Degree.ALL -> "${weather.temperatureCelsius} °C / " +
                     String.format("%.1f", weather.temperatureFahrenheit)
                         .replace(',', '.') + " °F"
         }
