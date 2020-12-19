@@ -1,3 +1,6 @@
 package devcom.premium.clothingandweather.common
 
-data class Human(@Gender val gender: Int, @Style val style: Int)
+/**
+ * Класс данных модели персонажа
+ */
+data class Human(val gender: Gender, val style: Style)
