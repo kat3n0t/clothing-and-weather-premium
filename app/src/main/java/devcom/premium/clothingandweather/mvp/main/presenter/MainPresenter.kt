@@ -2,22 +2,19 @@ package devcom.premium.clothingandweather.mvp.main.presenter
 
 import android.content.Context
 import android.os.Handler
-import android.preference.PreferenceManager
 import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.SettingsActivity
 import devcom.premium.clothingandweather.common.Clothes
 import devcom.premium.clothingandweather.common.ClothingConfig
-import devcom.premium.clothingandweather.common.IntExtensions
 import devcom.premium.clothingandweather.common.Weather
+import devcom.premium.clothingandweather.common.WeatherConfig
 import devcom.premium.clothingandweather.data.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.IMainView
 import devcom.premium.clothingandweather.mvp.model.DataModel
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import org.json.JSONObject
-
-private const val DEFAULT_CITY = "Kemerovo, RU"
 
 @InjectViewState
 class MainPresenter : MvpPresenter<IMainView>() {
@@ -56,53 +53,45 @@ class MainPresenter : MvpPresenter<IMainView>() {
 
     /**
      * Обрабатывает при обновлении соединения
+     *
+     * @param context [Context]
+     * @param clothing данные о модели персонажа
+     * @param
      */
-    fun updateAPIConnection(context: Context) {
+    fun updateAPIConnection(
+        context: Context,
+        clothing: ClothingConfig,
+        weather: WeatherConfig,
+        city: String,
+    ) {
         viewState.switchInfoVisibility(false)
         viewState.switchLoadingVisibility(true)
-
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-
-        val genderPref = sharedPref.getString("gender", "0")!!.toInt()
-        val gender = IntExtensions.toGender(genderPref) ?: return
-
-        val stylePref = sharedPref.getString("style", "0")!!.toInt()
-        val style = IntExtensions.toStyle(stylePref) ?: return
-
-        val weatherDegreePref = sharedPref.getString("degree", "0")!!.toInt()
-        val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
-
-        val weatherTypePref = sharedPref.getString("date", "0")!!.toInt()
-        val weatherType = IntExtensions.toWeatherType(weatherTypePref) ?: return
-
-        val city: String = sharedPref.getString("city", DEFAULT_CITY)!!
 
         object : Thread() {
             override fun run() {
                 try {
                     val weatherApi = WeatherApi(city)
-                    val json: JSONObject = weatherApi.data(weatherType)
+                    val json: JSONObject = weatherApi.data(weather.type)
                         ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
                     handler.post {
                         viewState.title(context.getString(R.string.loading))
 
-                        val dayJSON: JSONObject = DataModel.weatherDay(json, weatherType)
+                        val dayJSON: JSONObject = DataModel.weatherDay(json, weather.type)
                             ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
                         val mainDataObject = dayJSON.getJSONObject("main")
                         val windDataObject = dayJSON.getJSONObject("wind")
-                        val weather = Weather(
+                        val weatherData = Weather(
                             mainDataObject.getDouble("temp"),
                             windDataObject.getDouble("speed"),
                             mainDataObject.getDouble("humidity")
                         )
 
-                        viewState.title(DataModel.title(weatherDegree, weather))
-                        viewState.setTextInfo(weather)
+                        viewState.title(DataModel.title(weather.degree, weatherData))
+                        viewState.setTextInfo(weatherData)
 
-                        val clothing = ClothingConfig(gender, style)
-                        val perceivedTemp = weather.getTemperatureCelsiusPerception()
+                        val perceivedTemp = weatherData.getTemperatureCelsiusPerception()
                         viewState.loadModel(clothes.clothesId(clothing, perceivedTemp))
 
                         val weatherDataArray = dayJSON.getJSONArray("weather")

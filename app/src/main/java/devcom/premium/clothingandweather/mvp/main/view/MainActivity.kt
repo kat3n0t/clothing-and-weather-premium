@@ -7,14 +7,15 @@ import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.DrawableRes
 import com.bumptech.glide.Glide
 import devcom.premium.clothingandweather.R
-import devcom.premium.clothingandweather.common.Weather
+import devcom.premium.clothingandweather.common.*
+import devcom.premium.clothingandweather.common.storage.PreferencesStorage
+import devcom.premium.clothingandweather.common.storage.ConstStorage
 import devcom.premium.clothingandweather.mvp.main.presenter.MainPresenter
 import devcom.premium.clothingandweather.mvp.model.DataModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -26,11 +27,14 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
     @InjectPresenter
     internal lateinit var presenter: MainPresenter
 
+    private lateinit var storage: PreferencesStorage
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.CawTheme) // переход от темы .Launcher к обычной теме приложения
         super.onCreate(savedInstanceState)
         setOrientation()
         setContentView(R.layout.activity_main)
+        storage = PreferencesStorage(this)
     }
 
     /**
@@ -48,9 +52,9 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
     }
 
     override fun showDefaultModel() {
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
-        val gender = sharedPref.getString("gender", "0")
-        loadModel(if (gender == "0") R.drawable.man_default else R.drawable.woman_default)
+        val genderPref = storage.value(ConstStorage.TITLE_GENDER, "0")!!.toInt()
+        val gender = IntExtensions.toGender(genderPref)
+        loadModel(if (gender == Gender.MAN) R.drawable.man_default else R.drawable.woman_default)
     }
 
     override fun switchInfoVisibility(canVisible: Boolean) {
@@ -72,7 +76,23 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
 
     override fun updateWeatherData() {
         if (canNetworkAvailable()) {
-            presenter.updateAPIConnection(this)
+            val genderPref = storage.value(ConstStorage.TITLE_GENDER, "0")!!.toInt()
+            val gender = IntExtensions.toGender(genderPref) ?: return
+
+            val stylePref = storage.value(ConstStorage.TITLE_STYLE, "0")!!.toInt()
+            val style = IntExtensions.toStyle(stylePref) ?: return
+
+            val weatherDegreePref = storage.value(ConstStorage.TITLE_DEGREE, "0")!!.toInt()
+            val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
+
+            val weatherTypePref = storage.value(ConstStorage.TITLE_DATE, "0")!!.toInt()
+            val weatherType = IntExtensions.toWeatherType(weatherTypePref) ?: return
+
+            val clothing = ClothingConfig(gender, style)
+            val weather = WeatherConfig(weatherDegree, weatherType)
+            val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
+
+            presenter.updateAPIConnection(this, clothing, weather, city)
         } else {
             setTitle(R.string.waiting_for_network)
         }
