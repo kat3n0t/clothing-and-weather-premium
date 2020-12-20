@@ -11,9 +11,9 @@ class Clothes {
     private val range15p25p = 15.0..25.0
     private val range25p45p = 25.0..45.0
 
-    fun clothesId(human: Human, temperature: Double): Int {
-        if (human.gender == Gender.MAN) {
-            when (human.style) {
+    fun clothesId(clothing: ClothingConfig, temperature: Double): Int {
+        if (clothing.gender == Gender.MAN) {
+            when (clothing.style) {
                 Style.CASUAL -> return when (temperature) {
                     in range100n25n -> R.drawable.man_casual_35n25n
                     in range25n5n -> R.drawable.man_casual_25n5n
@@ -42,8 +42,8 @@ class Clothes {
                     else -> R.drawable.man_default
                 }
             }
-        } else if (human.gender == Gender.WOMAN) {
-            when (human.style) {
+        } else if (clothing.gender == Gender.WOMAN) {
+            when (clothing.style) {
                 Style.CASUAL -> return when (temperature) {
                     in range100n5n -> R.drawable.woman_casual_25n5n
                     in range5n5p -> R.drawable.woman_official_5n5p

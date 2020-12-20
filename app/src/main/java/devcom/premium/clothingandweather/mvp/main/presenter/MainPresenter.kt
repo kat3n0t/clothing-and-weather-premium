@@ -7,7 +7,7 @@ import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.SettingsActivity
 import devcom.premium.clothingandweather.common.Clothes
-import devcom.premium.clothingandweather.common.Human
+import devcom.premium.clothingandweather.common.ClothingConfig
 import devcom.premium.clothingandweather.common.IntExtensions
 import devcom.premium.clothingandweather.common.Weather
 import devcom.premium.clothingandweather.data.WeatherApi
@@ -101,9 +101,9 @@ class MainPresenter : MvpPresenter<IMainView>() {
                         viewState.title(DataModel.title(weatherDegree, weather))
                         viewState.setTextInfo(weather)
 
-                        val human = Human(sex, style)
+                        val clothing = ClothingConfig(sex, style)
                         val perceivedTemp = weather.getTemperatureCelsiusPerception()
-                        viewState.loadModel(clothes.clothesId(human, perceivedTemp))
+                        viewState.loadModel(clothes.clothesId(clothing, perceivedTemp))
 
                         val weatherDataArray = dayJSON.getJSONArray("weather")
                         val iconName = weatherDataArray.getJSONObject(0).getString("icon")
