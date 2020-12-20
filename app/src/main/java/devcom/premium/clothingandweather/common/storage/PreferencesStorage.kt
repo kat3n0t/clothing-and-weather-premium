@@ -1,14 +1,14 @@
 package devcom.premium.clothingandweather.common.storage
 
 import android.content.Context
+import androidx.preference.PreferenceManager
 
 /**
  * Реализация хранилища SharedPreferences
  */
 internal class PreferencesStorage(context: Context) {
 
-    private val sharedPreferences =
-        context.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
+    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     /**
      * Возвращает строковое значение или по умолчанию
@@ -27,8 +27,4 @@ internal class PreferencesStorage(context: Context) {
      */
     fun putString(key: String, value: String?) =
         sharedPreferences.edit().putString(key, value).apply()
-
-    companion object {
-        private const val APP_PREFERENCES = "caw_preferences"
-    }
 }
