@@ -86,10 +86,10 @@ class WeatherApi(private val city: String) {
      */
     private fun urlConnection(url: URL): HttpURLConnection? {
         return try {
-            val connection: HttpURLConnection? = url.openConnection() as HttpURLConnection
-            connection?.requestMethod = "GET"
-            connection?.connectTimeout = 10000
-            connection?.readTimeout = 10000
+            val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.connectTimeout = 10000
+            connection.readTimeout = 10000
             connection
         } catch (e: Exception) {
             null
