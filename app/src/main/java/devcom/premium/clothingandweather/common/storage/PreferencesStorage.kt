@@ -28,15 +28,6 @@ internal class PreferencesStorage(context: Context) {
     fun putString(key: String, value: String?) =
         sharedPreferences.edit().putString(key, value).apply()
 
-    /**
-     * Возвращает целочисленное значение или по умолчанию
-     *
-     * @param key ключ
-     * @param defaultValue значение по умолчанию
-     */
-    fun value(key: String, defaultValue: Int) =
-        sharedPreferences.getInt(key, defaultValue)
-
     companion object {
         private const val APP_PREFERENCES = "caw_preferences"
     }
