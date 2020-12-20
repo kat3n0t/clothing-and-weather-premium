@@ -5,11 +5,11 @@
 
         <ListPreference
             android:defaultValue="0"
-            android:entries="@array/list_sex"
-            android:entryValues="@array/list_sex_values"
-            android:key="sex"
+            android:entries="@array/list_gender"
+            android:entryValues="@array/list_gender_values"
+            android:key="gender"
             android:summary="%s"
-            android:title="@string/sex" />
+            android:title="@string/gender" />
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/list_styles"

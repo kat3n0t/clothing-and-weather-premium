@@ -13,7 +13,7 @@
     <string name="refresh">Uppdatera</string>
     <string name="save">Spara</string>
     <string name="settings">Inställningar</string>
-    <string name="sex">Kön</string>
+    <string name="gender">Kön</string>
     <string name="style">Stil</string>
     <string name="waiting_for_network">Väntar på nätverk ...</string>
     <string name="weather_data_not_found">Väderinformation hittades inte</string>

@@ -63,8 +63,8 @@ class MainPresenter : MvpPresenter<IMainView>() {
 
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
 
-        val sexPref = sharedPref.getString("sex", "0")!!.toInt()
-        val sex = IntExtensions.toGender(sexPref) ?: return
+        val genderPref = sharedPref.getString("gender", "0")!!.toInt()
+        val gender = IntExtensions.toGender(genderPref) ?: return
 
         val stylePref = sharedPref.getString("style", "0")!!.toInt()
         val style = IntExtensions.toStyle(stylePref) ?: return
@@ -101,7 +101,7 @@ class MainPresenter : MvpPresenter<IMainView>() {
                         viewState.title(DataModel.title(weatherDegree, weather))
                         viewState.setTextInfo(weather)
 
-                        val clothing = ClothingConfig(sex, style)
+                        val clothing = ClothingConfig(gender, style)
                         val perceivedTemp = weather.getTemperatureCelsiusPerception()
                         viewState.loadModel(clothes.clothesId(clothing, perceivedTemp))
 

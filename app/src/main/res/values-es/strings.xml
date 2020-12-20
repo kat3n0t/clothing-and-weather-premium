@@ -6,8 +6,8 @@
     <string name="loading">Cargando&#8230;</string>
     <string name="location">Ubicación</string>
     <string name="refresh">Recarga la página</string>
-    <string name="sex">Sexo</string>
-    <string-array name="list_sex">
+    <string name="gender">Género</string>
+    <string-array name="list_gender">
         <item>Hombre</item>
         <item>Mujer</item>
     </string-array>
