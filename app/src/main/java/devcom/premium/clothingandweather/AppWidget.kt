@@ -34,6 +34,32 @@ class AppWidget : AppWidgetProvider() {
             updateAppWidget(context, appWidgetManager, appWidgetId)
     }
 
+    override fun onAppWidgetOptionsChanged(
+        context: Context?,
+        appWidgetManager: AppWidgetManager?,
+        appWidgetId: Int,
+        newOptions: Bundle?
+    ) {
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
+        if (newOptions != null) {
+            val views = RemoteViews(context?.packageName, R.layout.app_widget)
+            if ((newOptions.getInt(OPTION_APPWIDGET_MIN_WIDTH) > 250) and (hasLoadedData)) {
+                views.setViewVisibility(R.id.widget_layout_weather_data, View.VISIBLE)
+                views.setViewVisibility(R.id.widget_layout_line, View.VISIBLE)
+                views.setViewVisibility(R.id.appwidget_text_speed, View.VISIBLE)
+                views.setViewVisibility(R.id.appwidget_text_humidity, View.VISIBLE)
+            } else {
+                if (hasLoadedData) views.setViewVisibility(R.id.appwidget_text_city, View.VISIBLE)
+                else views.setViewVisibility(R.id.appwidget_text_city, View.GONE)
+                views.setViewVisibility(R.id.widget_layout_weather_data, View.GONE)
+                views.setViewVisibility(R.id.widget_layout_line, View.GONE)
+                views.setViewVisibility(R.id.appwidget_text_speed, View.GONE)
+                views.setViewVisibility(R.id.appwidget_text_humidity, View.GONE)
+            }
+            AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views)
+        }
+    }
+
     companion object {
         var hasLoadedData: Boolean = false
         private var handler: Handler = Handler()
@@ -140,32 +166,6 @@ class AppWidget : AppWidgetProvider() {
                     return networkInfo != null && networkInfo.isConnected
                 }
             }
-        }
-    }
-
-    override fun onAppWidgetOptionsChanged(
-        context: Context?,
-        appWidgetManager: AppWidgetManager?,
-        appWidgetId: Int,
-        newOptions: Bundle?
-    ) {
-        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
-        if (newOptions != null) {
-            val views = RemoteViews(context?.packageName, R.layout.app_widget)
-            if ((newOptions.getInt(OPTION_APPWIDGET_MIN_WIDTH) > 250) and (hasLoadedData)) {
-                views.setViewVisibility(R.id.widget_layout_weather_data, View.VISIBLE)
-                views.setViewVisibility(R.id.widget_layout_line, View.VISIBLE)
-                views.setViewVisibility(R.id.appwidget_text_speed, View.VISIBLE)
-                views.setViewVisibility(R.id.appwidget_text_humidity, View.VISIBLE)
-            } else {
-                if (hasLoadedData) views.setViewVisibility(R.id.appwidget_text_city, View.VISIBLE)
-                else views.setViewVisibility(R.id.appwidget_text_city, View.GONE)
-                views.setViewVisibility(R.id.widget_layout_weather_data, View.GONE)
-                views.setViewVisibility(R.id.widget_layout_line, View.GONE)
-                views.setViewVisibility(R.id.appwidget_text_speed, View.GONE)
-                views.setViewVisibility(R.id.appwidget_text_humidity, View.GONE)
-            }
-            AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views)
         }
     }
 }

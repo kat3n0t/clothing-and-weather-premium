@@ -37,10 +37,6 @@ object DataModel {
     fun infoHumidity(context: Context, humidity: Double) =
         context.getString(R.string.humidity) + " = $humidity%"
 
-    private fun isWeatherDay(dateArray: String, date: String): Boolean {
-        return dateArray.contains("$date 1") or dateArray.contains("$date 2")
-    }
-
     fun weatherDay(json: JSONObject, type: WeatherType): JSONObject? {
         when (type) {
             WeatherType.WEATHER -> return json
@@ -66,5 +62,9 @@ object DataModel {
             }
         }
         return null
+    }
+
+    private fun isWeatherDay(dateArray: String, date: String): Boolean {
+        return dateArray.contains("$date 1") or dateArray.contains("$date 2")
     }
 }

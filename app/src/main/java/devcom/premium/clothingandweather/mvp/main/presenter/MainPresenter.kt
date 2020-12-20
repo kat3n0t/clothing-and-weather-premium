@@ -32,6 +32,11 @@ class MainPresenter : MvpPresenter<IMainView>() {
         viewState.updateWeatherData()
     }
 
+    override fun detachView(view: IMainView?) {
+        handler.removeCallbacksAndMessages(null)
+        super.detachView(view)
+    }
+
     /**
      * Обрабатывает нажатие на пункт меню с местоположением
      */
@@ -44,11 +49,6 @@ class MainPresenter : MvpPresenter<IMainView>() {
      */
     fun onLaunchPreferences() {
         viewState.launchActivity(SettingsActivity::class.java)
-    }
-
-    override fun detachView(view: IMainView?) {
-        handler.removeCallbacksAndMessages(null)
-        super.detachView(view)
     }
 
     /**
