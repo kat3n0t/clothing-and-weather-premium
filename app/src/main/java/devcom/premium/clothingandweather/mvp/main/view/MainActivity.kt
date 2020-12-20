@@ -39,20 +39,6 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
         storage = PreferencesStorage(this)
     }
 
-    /**
-     * Устанавливает ориентацию экрана
-     */
-    private fun setOrientation() {
-        requestedOrientation = if (resources.configuration.screenLayout
-            and Configuration.SCREENLAYOUT_SIZE_MASK == Configuration.SCREENLAYOUT_SIZE_LARGE ||
-            resources.configuration.screenLayout
-            and Configuration.SCREENLAYOUT_SIZE_MASK == Configuration.SCREENLAYOUT_SIZE_XLARGE
-        )
-            ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-        else
-            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-    }
-
     override fun showDefaultModel() {
         val genderPref = storage.value(ConstStorage.TITLE_GENDER, "0")!!.toInt()
         val gender = IntExtensions.toGender(genderPref)
@@ -140,6 +126,20 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
 
     override fun loadModel(@DrawableRes id: Int) {
         model.setImageResource(id)
+    }
+
+    /**
+     * Устанавливает ориентацию экрана
+     */
+    private fun setOrientation() {
+        requestedOrientation = if (resources.configuration.screenLayout
+            and Configuration.SCREENLAYOUT_SIZE_MASK == Configuration.SCREENLAYOUT_SIZE_LARGE ||
+            resources.configuration.screenLayout
+            and Configuration.SCREENLAYOUT_SIZE_MASK == Configuration.SCREENLAYOUT_SIZE_XLARGE
+        )
+            ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        else
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
     /**
