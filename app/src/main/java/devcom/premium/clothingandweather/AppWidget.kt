@@ -11,12 +11,13 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.preference.PreferenceManager
 import android.view.View
 import android.widget.RemoteViews
 import devcom.premium.clothingandweather.common.IntExtensions
 import devcom.premium.clothingandweather.common.Weather
 import devcom.premium.clothingandweather.common.WeatherType
+import devcom.premium.clothingandweather.common.storage.PreferencesStorage
+import devcom.premium.clothingandweather.common.storage.ConstStorage
 import devcom.premium.clothingandweather.data.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.MainActivity
 import devcom.premium.clothingandweather.mvp.model.DataModel
@@ -45,10 +46,10 @@ class AppWidget : AppWidgetProvider() {
                 return
             }
 
-            val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-            val city = sharedPref.getString("city", "Kemerovo, RU")!!
+            val storage = PreferencesStorage(context)
+            val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
 
-            val weatherDegreePref = sharedPref.getString("degree", "0")!!.toInt()
+            val weatherDegreePref = storage.value(ConstStorage.TITLE_DEGREE, "0")!!.toInt()
             val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
 
             object : Thread() {

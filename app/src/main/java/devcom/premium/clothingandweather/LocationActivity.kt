@@ -1,19 +1,23 @@
 package devcom.premium.clothingandweather
 
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
+import devcom.premium.clothingandweather.common.storage.PreferencesStorage
+import devcom.premium.clothingandweather.common.storage.ConstStorage
 import kotlinx.android.synthetic.main.activity_location.*
 
 class LocationActivity : AppCompatActivity() {
+
+    private lateinit var storage: PreferencesStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_location)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        storage = PreferencesStorage(this)
     }
 
     override fun onStart() {
@@ -36,8 +40,7 @@ class LocationActivity : AppCompatActivity() {
      * Отображает текущий город
      */
     private fun showCurrentCity() {
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
-        val city = sharedPref.getString("city", "Kemerovo, RU")
+        val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
         tvActiveCity.text = city
     }
 
@@ -48,8 +51,7 @@ class LocationActivity : AppCompatActivity() {
         tvCheck.visibility = View.GONE
         val text = etCity.text.toString()
         if (text != "") {
-            val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
-            sharedPref.edit().putString("city", transformTextFirstCharToUpperCase(text)).apply()
+            storage.putString(ConstStorage.TITLE_CITY, transformTextFirstCharToUpperCase(text))
             showCurrentCity()
         } else tvCheck.visibility = View.VISIBLE
     }
