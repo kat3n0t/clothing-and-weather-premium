@@ -21,12 +21,12 @@
 
     <string name="preferences">Preferences</string>
 
-    <string name="sex">Sex</string>
-    <string-array name="list_sex">
+    <string name="gender">Gender</string>
+    <string-array name="list_gender">
         <item>Man</item>
         <item>Woman</item>
     </string-array>
-    <string-array name="list_sex_values" translatable="false">
+    <string-array name="list_gender_values" translatable="false">
         <item>0</item>
         <item>1</item>
     </string-array>

@@ -13,7 +13,7 @@
     <string name="cur_city">Aktuelle Stadt:</string>
     <string name="city_hint">Geben Sie die Stadt ein</string>
     <string name="save">Speichern</string>
-    <string name="sex">Geschlecht</string>
+    <string name="gender">Geschlecht</string>
     <string name="preferences">Einstellungen</string>
     <string name="weather_data_not_found">Keine Wetterdaten gefunden</string>
     <string name="waiting_for_network">Auf Verbindung warten#8230;</string>

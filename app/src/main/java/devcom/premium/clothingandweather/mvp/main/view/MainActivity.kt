@@ -49,8 +49,8 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
 
     override fun showDefaultModel() {
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
-        val sex = sharedPref.getString("sex", "0")
-        loadModel(if (sex == "0") R.drawable.man_default else R.drawable.woman_default)
+        val gender = sharedPref.getString("gender", "0")
+        loadModel(if (gender == "0") R.drawable.man_default else R.drawable.woman_default)
     }
 
     override fun switchInfoVisibility(canVisible: Boolean) {
