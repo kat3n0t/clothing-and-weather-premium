@@ -42,7 +42,7 @@ class AppWidget : AppWidgetProvider() {
             context: Context, appWidgetManager: AppWidgetManager,
             appWidgetId: Int
         ) {
-            if (!internetAvailable(context)) {
+            if (!networkAvailable(context)) {
                 return
             }
 
@@ -120,35 +120,26 @@ class AppWidget : AppWidgetProvider() {
          *
          * @param context [Context]
          */
-        private fun internetAvailable(context: Context): Boolean {
-            var result = false
+        private fun networkAvailable(context: Context): Boolean {
             val connectivityManager =
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val networkCapabilities = connectivityManager.activeNetwork ?: return false
                 val actNw =
                     connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
-                result = when {
+                return when {
                     actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
                     actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
                     actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
                     else -> false
                 }
             } else {
-                connectivityManager.run {
-                    @Suppress("DEPRECATION")
-                    connectivityManager.activeNetworkInfo?.run {
-                        result = when (type) {
-                            ConnectivityManager.TYPE_WIFI -> true
-                            ConnectivityManager.TYPE_MOBILE -> true
-                            ConnectivityManager.TYPE_ETHERNET -> true
-                            else -> false
-                        }
-
-                    }
+                @Suppress("DEPRECATION")
+                run {
+                    val networkInfo = connectivityManager.activeNetworkInfo
+                    return networkInfo != null && networkInfo.isConnected
                 }
             }
-            return result
         }
     }
 

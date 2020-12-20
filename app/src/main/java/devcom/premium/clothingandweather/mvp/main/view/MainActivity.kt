@@ -5,7 +5,9 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -75,38 +77,28 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
     }
 
     override fun updateWeatherData() {
-        if (canNetworkAvailable()) {
-            val genderPref = storage.value(ConstStorage.TITLE_GENDER, "0")!!.toInt()
-            val gender = IntExtensions.toGender(genderPref) ?: return
-
-            val stylePref = storage.value(ConstStorage.TITLE_STYLE, "0")!!.toInt()
-            val style = IntExtensions.toStyle(stylePref) ?: return
-
-            val weatherDegreePref = storage.value(ConstStorage.TITLE_DEGREE, "0")!!.toInt()
-            val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
-
-            val weatherTypePref = storage.value(ConstStorage.TITLE_DATE, "0")!!.toInt()
-            val weatherType = IntExtensions.toWeatherType(weatherTypePref) ?: return
-
-            val clothing = ClothingConfig(gender, style)
-            val weather = WeatherConfig(weatherDegree, weatherType)
-            val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
-
-            presenter.updateAPIConnection(this, clothing, weather, city)
-        } else {
+        if (!networkAvailable()) {
             setTitle(R.string.waiting_for_network)
+            return
         }
-    }
 
-    /**
-     * Проверяет доступ к интернету
-     *
-     * @return истина, если есть интернет
-     */
-    private fun canNetworkAvailable(): Boolean {
-        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = cm.activeNetworkInfo
-        return networkInfo != null && networkInfo.isConnected
+        val genderPref = storage.value(ConstStorage.TITLE_GENDER, "0")!!.toInt()
+        val gender = IntExtensions.toGender(genderPref) ?: return
+
+        val stylePref = storage.value(ConstStorage.TITLE_STYLE, "0")!!.toInt()
+        val style = IntExtensions.toStyle(stylePref) ?: return
+
+        val weatherDegreePref = storage.value(ConstStorage.TITLE_DEGREE, "0")!!.toInt()
+        val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
+
+        val weatherTypePref = storage.value(ConstStorage.TITLE_DATE, "0")!!.toInt()
+        val weatherType = IntExtensions.toWeatherType(weatherTypePref) ?: return
+
+        val clothing = ClothingConfig(gender, style)
+        val weather = WeatherConfig(weatherDegree, weatherType)
+        val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
+
+        presenter.updateAPIConnection(this, clothing, weather, city)
     }
 
     override fun setTextInfo(weather: Weather) {
@@ -148,5 +140,30 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
 
     override fun loadModel(@DrawableRes id: Int) {
         model.setImageResource(id)
+    }
+
+    /**
+     * Проверяет доступность интернет-соединения
+     */
+    private fun networkAvailable(): Boolean {
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val networkCapabilities = connectivityManager.activeNetwork ?: return false
+            val actNw =
+                connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
+            return when {
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                else -> false
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            run {
+                val networkInfo = connectivityManager.activeNetworkInfo
+                return networkInfo != null && networkInfo.isConnected
+            }
+        }
     }
 }
