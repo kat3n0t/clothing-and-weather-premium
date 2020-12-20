@@ -6,8 +6,8 @@
     <string name="loading">Cargando&#8230;</string>
     <string name="location">Ubicación</string>
     <string name="refresh">Recarga la página</string>
-    <string name="sex">Sexo</string>
-    <string-array name="list_sex">
+    <string name="gender">Género</string>
+    <string-array name="list_gender">
         <item>Hombre</item>
         <item>Mujer</item>
     </string-array>
@@ -30,7 +30,7 @@
         <item>Hoy</item>
         <item>Mañana</item>
     </string-array>
-    <string name="waiting_for_network">Esperando conexión#8230;</string>
+    <string name="waiting_for_network">Esperando conexión&#8230;</string>
     <string name="degree">Unidad de temperatura</string>
     <string name="weather">Clima</string>
     <string name="clothing">Ropa</string>

@@ -1,24 +1,20 @@
 package devcom.premium.clothingandweather.mvp.main.presenter
 
+import android.content.Context
 import android.os.Handler
-import android.preference.PreferenceManager
-import android.view.View
 import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.SettingsActivity
 import devcom.premium.clothingandweather.common.Clothes
-import devcom.premium.clothingandweather.common.Human
+import devcom.premium.clothingandweather.common.ClothingConfig
 import devcom.premium.clothingandweather.common.Weather
+import devcom.premium.clothingandweather.common.WeatherConfig
 import devcom.premium.clothingandweather.data.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.IMainView
-import devcom.premium.clothingandweather.mvp.main.view.MainActivity
 import devcom.premium.clothingandweather.mvp.model.DataModel
-import kotlinx.android.synthetic.main.activity_main.*
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import org.json.JSONObject
-
-private const val DEFAULT_CITY = "Kemerovo, RU"
 
 @InjectViewState
 class MainPresenter : MvpPresenter<IMainView>() {
@@ -36,6 +32,11 @@ class MainPresenter : MvpPresenter<IMainView>() {
         viewState.updateWeatherData()
     }
 
+    override fun detachView(view: IMainView?) {
+        handler.removeCallbacksAndMessages(null)
+        super.detachView(view)
+    }
+
     /**
      * Обрабатывает нажатие на пункт меню с местоположением
      */
@@ -50,69 +51,65 @@ class MainPresenter : MvpPresenter<IMainView>() {
         viewState.launchActivity(SettingsActivity::class.java)
     }
 
-    override fun detachView(view: IMainView?) {
-        handler.removeCallbacksAndMessages(null)
-        super.detachView(view)
-    }
-
     /**
      * Обрабатывает при обновлении соединения
+     *
+     * @param context [Context]
+     * @param clothing данные о модели персонажа
+     * @param
      */
-    fun updateAPIConnection(activity: MainActivity) {
-        viewState.switchInfoVisible(false)
-        activity.prBar.visibility = View.VISIBLE
-
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
-
-        val human = Human(
-            sharedPref.getString("sex", "0")!!.toInt(),
-            sharedPref.getString("style", "0")!!.toInt()
-        )
-        val city: String = sharedPref.getString("city", DEFAULT_CITY)!!
-        val weatherDegree = sharedPref.getString("degree", "0")!!.toInt()
-        val weatherDate = sharedPref.getString("date", "0")!!.toInt()
+    fun updateAPIConnection(
+        context: Context,
+        clothing: ClothingConfig,
+        weather: WeatherConfig,
+        city: String,
+    ) {
+        viewState.switchInfoVisibility(false)
+        viewState.switchLoadingVisibility(true)
 
         object : Thread() {
             override fun run() {
                 try {
                     val weatherApi = WeatherApi(city)
-                    val json: JSONObject = weatherApi.data(weatherDate)
-                        ?: throw Exception(activity.getString(R.string.weather_data_not_found))
+                    val json: JSONObject = weatherApi.data(weather.type)
+                        ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
                     handler.post {
-                        activity.setTitle(R.string.loading)
+                        viewState.title(context.getString(R.string.loading))
 
-                        val dayJSON: JSONObject = DataModel.weatherDay(json, weatherDate)
-                            ?: throw Exception(activity.getString(R.string.weather_data_not_found))
+                        val dayJSON: JSONObject = DataModel.weatherDay(json, weather.type)
+                            ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
                         val mainDataObject = dayJSON.getJSONObject("main")
                         val windDataObject = dayJSON.getJSONObject("wind")
-                        val weather = Weather(
+                        val weatherData = Weather(
                             mainDataObject.getDouble("temp"),
                             windDataObject.getDouble("speed"),
                             mainDataObject.getDouble("humidity")
                         )
 
-                        activity.title = DataModel.title(weatherDegree, weather)
-                        viewState.setTextInfo(weather)
+                        viewState.title(DataModel.title(weather.degree, weatherData))
+                        viewState.setTextInfo(weatherData)
 
-                        val perceivedTemp = weather.getTemperatureCelsiusPerception()
-                        viewState.loadModel(clothes.clothesId(human, perceivedTemp))
+                        val perceivedTemp = weatherData.getTemperatureCelsiusPerception()
+                        viewState.loadModel(clothes.clothesId(clothing, perceivedTemp))
 
                         val weatherDataArray = dayJSON.getJSONArray("weather")
                         val iconName = weatherDataArray.getJSONObject(0).getString("icon")
                         viewState.loadIcon(weatherApi.iconUrl(iconName))
 
-                        activity.prBar.visibility = View.GONE
-                        viewState.switchInfoVisible(true)
+                        viewState.switchLoadingVisibility(false)
+                        viewState.switchInfoVisibility(true)
                     }
                 } catch (e: Exception) {
                     handler.removeCallbacksAndMessages(null)
                     handler.post {
-                        activity.prBar.visibility = View.GONE
-                        viewState.switchInfoVisible(false)
-                        if (e.message.equals(activity.getString(R.string.weather_data_not_found))) {
-                            activity.title = e.message
+                        viewState.switchLoadingVisibility(false)
+                        viewState.switchInfoVisibility(false)
+                        val dataNotFoundException =
+                            context.getString(R.string.weather_data_not_found)
+                        if (e.message.equals(dataNotFoundException)) {
+                            viewState.title(dataNotFoundException)
                         }
                     }
                 }

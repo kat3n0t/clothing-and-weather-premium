@@ -4,6 +4,7 @@ import android.content.Context
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.common.Degree
 import devcom.premium.clothingandweather.common.Weather
+import devcom.premium.clothingandweather.common.WeatherType
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -15,17 +16,17 @@ object DataModel {
     /**
      * Возвращает заголовок приложения с данными о погоде
      *
-     * @param weatherDegree [Degree]
+     * @param degree [Degree]
      * @param weather данные о погоде
      * @return заголовок приложения
      */
-    fun title(@Degree weatherDegree: Int, weather: Weather) =
-        when (weatherDegree) {
+    fun title(degree: Degree, weather: Weather) =
+        when (degree) {
             Degree.CELSIUS -> "${weather.temperatureCelsius} °C"
             Degree.FAHRENHEIT ->
                 String.format("%.1f", weather.temperatureFahrenheit)
                     .replace(',', '.') + " °F"
-            else -> "${weather.temperatureCelsius} °C / " +
+            Degree.ALL -> "${weather.temperatureCelsius} °C / " +
                     String.format("%.1f", weather.temperatureFahrenheit)
                         .replace(',', '.') + " °F"
         }
@@ -36,39 +37,34 @@ object DataModel {
     fun infoHumidity(context: Context, humidity: Double) =
         context.getString(R.string.humidity) + " = $humidity%"
 
-    private fun isWeatherDay(dateArray: String, date: String): Boolean {
-        return dateArray.contains("$date 1") or dateArray.contains("$date 2")
-    }
-
-    fun weatherDay(json: JSONObject, weatherDate: Int): JSONObject? {
-        var result: JSONObject? = null
-        when (weatherDate) {
-            1 -> {
+    fun weatherDay(json: JSONObject, type: WeatherType): JSONObject? {
+        when (type) {
+            WeatherType.WEATHER -> return json
+            WeatherType.FORECAST_TODAY -> {
                 val list = json.getJSONArray("list")
                 val currentDate = dateFormat.format(Calendar.getInstance().time)
                 for (i in 1 until json.getInt("cnt") - 1) {
                     if (isWeatherDay(list.getJSONObject(i).getString("dt_txt"), currentDate)) {
-                        result = list.getJSONObject(i)
-                        break
+                        return list.getJSONObject(i)
                     }
                 }
             }
-            2 -> {
+            WeatherType.FORECAST_TOMORROW -> {
                 val list = json.getJSONArray("list")
                 val calendarTomorrow = Calendar.getInstance()
                 calendarTomorrow.add(Calendar.DATE, 1)
                 val tomorrowDate = dateFormat.format(calendarTomorrow.time)
                 for (i in 1 until json.getInt("cnt")) {
                     if (isWeatherDay(list.getJSONObject(i).getString("dt_txt"), tomorrowDate)) {
-                        result = list.getJSONObject(i)
-                        break
+                        return list.getJSONObject(i)
                     }
                 }
             }
-            else -> {
-                result = json
-            }
         }
-        return result
+        return null
+    }
+
+    private fun isWeatherDay(dateArray: String, date: String): Boolean {
+        return dateArray.contains("$date 1") or dateArray.contains("$date 2")
     }
 }

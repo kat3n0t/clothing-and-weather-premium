@@ -9,8 +9,8 @@
         <item>Официальный</item>
         <item>Спортивный</item>
     </string-array>
-    <string name="sex">Пол</string>
-    <string-array name="list_sex">
+    <string name="gender">Пол</string>
+    <string-array name="list_gender">
         <item>Мужской</item>
         <item>Женский</item>
     </string-array>

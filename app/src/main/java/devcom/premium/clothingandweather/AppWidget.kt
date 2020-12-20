@@ -11,10 +11,13 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.preference.PreferenceManager
 import android.view.View
 import android.widget.RemoteViews
+import devcom.premium.clothingandweather.common.IntExtensions
 import devcom.premium.clothingandweather.common.Weather
+import devcom.premium.clothingandweather.common.WeatherType
+import devcom.premium.clothingandweather.common.storage.PreferencesStorage
+import devcom.premium.clothingandweather.common.storage.ConstStorage
 import devcom.premium.clothingandweather.data.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.MainActivity
 import devcom.premium.clothingandweather.mvp.model.DataModel
@@ -31,6 +34,32 @@ class AppWidget : AppWidgetProvider() {
             updateAppWidget(context, appWidgetManager, appWidgetId)
     }
 
+    override fun onAppWidgetOptionsChanged(
+        context: Context?,
+        appWidgetManager: AppWidgetManager?,
+        appWidgetId: Int,
+        newOptions: Bundle?
+    ) {
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
+        if (newOptions != null) {
+            val views = RemoteViews(context?.packageName, R.layout.app_widget)
+            if ((newOptions.getInt(OPTION_APPWIDGET_MIN_WIDTH) > 250) and (hasLoadedData)) {
+                views.setViewVisibility(R.id.widget_layout_weather_data, View.VISIBLE)
+                views.setViewVisibility(R.id.widget_layout_line, View.VISIBLE)
+                views.setViewVisibility(R.id.appwidget_text_speed, View.VISIBLE)
+                views.setViewVisibility(R.id.appwidget_text_humidity, View.VISIBLE)
+            } else {
+                if (hasLoadedData) views.setViewVisibility(R.id.appwidget_text_city, View.VISIBLE)
+                else views.setViewVisibility(R.id.appwidget_text_city, View.GONE)
+                views.setViewVisibility(R.id.widget_layout_weather_data, View.GONE)
+                views.setViewVisibility(R.id.widget_layout_line, View.GONE)
+                views.setViewVisibility(R.id.appwidget_text_speed, View.GONE)
+                views.setViewVisibility(R.id.appwidget_text_humidity, View.GONE)
+            }
+            AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views)
+        }
+    }
+
     companion object {
         var hasLoadedData: Boolean = false
         private var handler: Handler = Handler()
@@ -39,23 +68,25 @@ class AppWidget : AppWidgetProvider() {
             context: Context, appWidgetManager: AppWidgetManager,
             appWidgetId: Int
         ) {
-            if (!internetAvailable(context)) {
+            if (!networkAvailable(context)) {
                 return
             }
 
-            val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-            val city = sharedPref.getString("city", "Kemerovo, RU")!!
-            val weatherDegree = sharedPref.getString("degree", "0")!!.toInt()
+            val storage = PreferencesStorage(context)
+            val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
+
+            val weatherDegreePref = storage.value(ConstStorage.TITLE_DEGREE, "0")!!.toInt()
+            val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
 
             object : Thread() {
                 override fun run() {
                     try {
                         val weatherApi = WeatherApi(city)
-                        val json: JSONObject = weatherApi.data(1)
+                        val json: JSONObject = weatherApi.data(WeatherType.FORECAST_TODAY)
                             ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
                         handler.post {
-                            val dayJSON = DataModel.weatherDay(json, 1)
+                            val dayJSON = DataModel.weatherDay(json, WeatherType.FORECAST_TODAY)
                                 ?: throw Exception(context.getString(R.string.weather_data_not_found))
 
                             val mainDataObject = dayJSON.getJSONObject("main")
@@ -115,61 +146,26 @@ class AppWidget : AppWidgetProvider() {
          *
          * @param context [Context]
          */
-        private fun internetAvailable(context: Context): Boolean {
-            var result = false
+        private fun networkAvailable(context: Context): Boolean {
             val connectivityManager =
                 context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val networkCapabilities = connectivityManager.activeNetwork ?: return false
                 val actNw =
                     connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
-                result = when {
+                return when {
                     actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
                     actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
                     actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
                     else -> false
                 }
             } else {
-                connectivityManager.run {
-                    @Suppress("DEPRECATION")
-                    connectivityManager.activeNetworkInfo?.run {
-                        result = when (type) {
-                            ConnectivityManager.TYPE_WIFI -> true
-                            ConnectivityManager.TYPE_MOBILE -> true
-                            ConnectivityManager.TYPE_ETHERNET -> true
-                            else -> false
-                        }
-
-                    }
+                @Suppress("DEPRECATION")
+                run {
+                    val networkInfo = connectivityManager.activeNetworkInfo
+                    return networkInfo != null && networkInfo.isConnected
                 }
             }
-            return result
-        }
-    }
-
-    override fun onAppWidgetOptionsChanged(
-        context: Context?,
-        appWidgetManager: AppWidgetManager?,
-        appWidgetId: Int,
-        newOptions: Bundle?
-    ) {
-        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
-        if (newOptions != null) {
-            val views = RemoteViews(context?.packageName, R.layout.app_widget)
-            if ((newOptions.getInt(OPTION_APPWIDGET_MIN_WIDTH) > 250) and (hasLoadedData)) {
-                views.setViewVisibility(R.id.widget_layout_weather_data, View.VISIBLE)
-                views.setViewVisibility(R.id.widget_layout_line, View.VISIBLE)
-                views.setViewVisibility(R.id.appwidget_text_speed, View.VISIBLE)
-                views.setViewVisibility(R.id.appwidget_text_humidity, View.VISIBLE)
-            } else {
-                if (hasLoadedData) views.setViewVisibility(R.id.appwidget_text_city, View.VISIBLE)
-                else views.setViewVisibility(R.id.appwidget_text_city, View.GONE)
-                views.setViewVisibility(R.id.widget_layout_weather_data, View.GONE)
-                views.setViewVisibility(R.id.widget_layout_line, View.GONE)
-                views.setViewVisibility(R.id.appwidget_text_speed, View.GONE)
-                views.setViewVisibility(R.id.appwidget_text_humidity, View.GONE)
-            }
-            AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views)
         }
     }
 }
