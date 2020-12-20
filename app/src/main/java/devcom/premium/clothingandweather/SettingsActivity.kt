@@ -1,19 +1,21 @@
 package devcom.premium.clothingandweather
 
 import android.os.Bundle
-import android.preference.PreferenceActivity
-import android.preference.PreferenceManager
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 
-class SettingsActivity : PreferenceActivity() {
+/**
+ * Активность для фрагмента настроек
+ */
+class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) fragmentManager.beginTransaction()
+        supportFragmentManager
+            .beginTransaction()
             .replace(android.R.id.content, SettingsFragment())
             .commit()
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
