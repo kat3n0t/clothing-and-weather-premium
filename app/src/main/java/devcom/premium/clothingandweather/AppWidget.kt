@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.widget.RemoteViews
+import devcom.premium.clothingandweather.common.DataNotFoundException
 import devcom.premium.clothingandweather.common.IntExtensions
 import devcom.premium.clothingandweather.common.Weather
 import devcom.premium.clothingandweather.common.WeatherType
@@ -83,11 +84,11 @@ class AppWidget : AppWidgetProvider() {
                     try {
                         val weatherApi = WeatherApi(city)
                         val json: JSONObject = weatherApi.data(WeatherType.FORECAST_TODAY)
-                            ?: throw Exception(context.getString(R.string.weather_data_not_found))
+                            ?: throw DataNotFoundException(context)
 
                         handler.post {
                             val dayJSON = DataModel.weatherDay(json, WeatherType.FORECAST_TODAY)
-                                ?: throw Exception(context.getString(R.string.weather_data_not_found))
+                                ?: throw DataNotFoundException(context)
 
                             val mainDataObject = dayJSON.getJSONObject("main")
                             val windDataObject = dayJSON.getJSONObject("wind")

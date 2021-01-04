@@ -5,10 +5,7 @@ import android.os.Handler
 import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.SettingsActivity
-import devcom.premium.clothingandweather.common.Clothes
-import devcom.premium.clothingandweather.common.ClothingConfig
-import devcom.premium.clothingandweather.common.Weather
-import devcom.premium.clothingandweather.common.WeatherConfig
+import devcom.premium.clothingandweather.common.*
 import devcom.premium.clothingandweather.data.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.IMainView
 import devcom.premium.clothingandweather.mvp.model.DataModel
@@ -72,13 +69,13 @@ class MainPresenter : MvpPresenter<IMainView>() {
                 try {
                     val weatherApi = WeatherApi(city)
                     val json: JSONObject = weatherApi.data(weather.type)
-                        ?: throw Exception(context.getString(R.string.weather_data_not_found))
+                        ?: throw DataNotFoundException(context)
 
                     handler.post {
                         viewState.title(context.getString(R.string.loading))
 
                         val dayJSON: JSONObject = DataModel.weatherDay(json, weather.type)
-                            ?: throw Exception(context.getString(R.string.weather_data_not_found))
+                            ?: throw DataNotFoundException(context)
 
                         val mainDataObject = dayJSON.getJSONObject("main")
                         val windDataObject = dayJSON.getJSONObject("wind")
@@ -106,10 +103,10 @@ class MainPresenter : MvpPresenter<IMainView>() {
                     handler.post {
                         viewState.switchLoadingVisibility(false)
                         viewState.switchInfoVisibility(false)
-                        val dataNotFoundException =
-                            context.getString(R.string.weather_data_not_found)
-                        if (e.message.equals(dataNotFoundException)) {
-                            viewState.title(dataNotFoundException)
+                        e.message?.let {
+                            if (e is DataNotFoundException) {
+                                viewState.title(it)
+                            }
                         }
                     }
                 }
