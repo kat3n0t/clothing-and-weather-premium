@@ -11,6 +11,8 @@ android {
         targetSdkVersion sdkVersion
         versionCode 12
         versionName "1.4"
+
+        multiDexEnabled true
     }
     buildTypes {
         release {
