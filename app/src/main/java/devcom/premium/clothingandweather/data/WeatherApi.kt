@@ -50,32 +50,23 @@ class WeatherApi(private val city: String) {
      * @return [JSONObject]
      */
     private fun jsonObject(url: URL): JSONObject? {
-        val connection: HttpURLConnection? = urlConnection(url)
-        if (connection != null) {
-            try {
-                val reader = BufferedReader(InputStreamReader(connection.inputStream))
-
-                val json = StringBuffer(1024)
-                var tmp: String?
-                do {
-                    tmp = reader.readLine()
-                    if (tmp == null)
-                        break
-                    json.append(tmp).append("\n")
-                } while (true)
-                reader.close()
-
-                val data = JSONObject(json.toString())
-                return if (isCorrectData(data)) {
-                    return data
-                } else null
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                connection.disconnect()
+        val connection: HttpURLConnection = urlConnection(url) ?: return null
+        var data: JSONObject? = null
+        try {
+            val reader = BufferedReader(InputStreamReader(connection.inputStream))
+            val json = StringBuffer()
+            reader.forEachLine {
+                json.append(it).append("\n")
             }
+            reader.close()
+
+            data = JSONObject(json.toString())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            connection.disconnect()
+            return if (data == null || !isCorrectData(data)) null else data
         }
-        return null
     }
 
     /**

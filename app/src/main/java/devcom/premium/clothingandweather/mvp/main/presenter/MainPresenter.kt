@@ -63,6 +63,7 @@ class MainPresenter : MvpPresenter<IMainView>() {
     ) {
         viewState.switchInfoVisibility(false)
         viewState.switchLoadingVisibility(true)
+        viewState.title(context.getString(R.string.loading))
 
         object : Thread() {
             override fun run() {
@@ -72,8 +73,6 @@ class MainPresenter : MvpPresenter<IMainView>() {
                         ?: throw DataNotFoundException(context)
 
                     handler.post {
-                        viewState.title(context.getString(R.string.loading))
-
                         val dayJSON: JSONObject = DataModel.weatherDay(json, weather.type)
                             ?: throw DataNotFoundException(context)
 
