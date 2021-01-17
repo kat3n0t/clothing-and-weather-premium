@@ -2,6 +2,7 @@ package devcom.premium.clothingandweather.mvp.main.presenter
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.SettingsActivity
@@ -16,7 +17,7 @@ import org.json.JSONObject
 @InjectViewState
 class MainPresenter : MvpPresenter<IMainView>() {
 
-    private var handler: Handler = Handler()
+    private var handler: Handler = Handler(Looper.getMainLooper())
     private val clothes = Clothes()
 
     override fun onFirstViewAttach() {

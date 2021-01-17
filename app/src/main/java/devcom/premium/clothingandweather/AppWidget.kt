@@ -11,6 +11,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.RemoteViews
 import devcom.premium.clothingandweather.common.DataNotFoundException
@@ -63,7 +64,7 @@ class AppWidget : AppWidgetProvider() {
 
     companion object {
         var hasLoadedData: Boolean = false
-        private var handler: Handler = Handler()
+        private var handler: Handler = Handler(Looper.getMainLooper())
 
         internal fun updateAppWidget(
             context: Context, appWidgetManager: AppWidgetManager,
