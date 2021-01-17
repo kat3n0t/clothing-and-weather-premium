@@ -9,8 +9,8 @@ android {
         applicationId "devcom.premium.clothingandweather"
         minSdkVersion 17
         targetSdkVersion sdkVersion
-        versionCode 12
-        versionName "1.4"
+        versionCode 13
+        versionName "1.4.1"
 
         multiDexEnabled true
     }
@@ -27,7 +27,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    buildToolsVersion '30.0.2'
+    buildToolsVersion '30.0.3'
 }
 
 dependencies {
