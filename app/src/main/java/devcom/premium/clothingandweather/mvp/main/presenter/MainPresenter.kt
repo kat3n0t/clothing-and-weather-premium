@@ -18,7 +18,6 @@ import org.json.JSONObject
 class MainPresenter : MvpPresenter<IMainView>() {
 
     private var handler: Handler = Handler(Looper.getMainLooper())
-    private val clothes = Clothes()
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -88,8 +87,9 @@ class MainPresenter : MvpPresenter<IMainView>() {
                         viewState.title(DataModel.title(weather.degree, weatherData))
                         viewState.setTextInfo(weatherData)
 
+                        val clothes = Clothes(clothing)
                         val perceivedTemp = weatherData.getTemperatureCelsiusPerception()
-                        viewState.loadModel(clothes.clothesId(clothing, perceivedTemp))
+                        viewState.loadModel(clothes.clothesId(perceivedTemp))
 
                         val weatherDataArray = dayJSON.getJSONArray("weather")
                         val iconName = weatherDataArray.getJSONObject(0).getString("icon")
