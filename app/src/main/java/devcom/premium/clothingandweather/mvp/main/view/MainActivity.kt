@@ -82,6 +82,7 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
 
         val clothing = ClothingConfig(gender, style)
         val weather = WeatherConfig(weatherDegree, weatherType)
+
         val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
 
         presenter.updateAPIConnection(this, clothing, weather, city)

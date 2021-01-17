@@ -5,9 +5,10 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
-import devcom.premium.clothingandweather.common.storage.PreferencesStorage
 import devcom.premium.clothingandweather.common.storage.ConstStorage
+import devcom.premium.clothingandweather.common.storage.PreferencesStorage
 import kotlinx.android.synthetic.main.activity_location.*
+import java.util.Locale
 
 class LocationActivity : AppCompatActivity() {
 
@@ -48,18 +49,25 @@ class LocationActivity : AppCompatActivity() {
      * Обрабатывает нажатие на кнопку сохранения
      */
     private fun onSaveLocation() {
+        val text = etCity.text.toString().trim()
+        if (text.isBlank()) {
+            tvCheck.visibility = View.VISIBLE
+            return
+        }
+
         tvCheck.visibility = View.GONE
-        val text = etCity.text.toString()
-        if (text != "") {
-            storage.putString(ConstStorage.TITLE_CITY, transformTextFirstCharToUpperCase(text))
-            showCurrentCity()
-        } else tvCheck.visibility = View.VISIBLE
+        storage.putString(ConstStorage.TITLE_CITY, transformTextFirstCharToUpperCase(text))
+        showCurrentCity()
     }
 
     /**
      * Делает первую букву текста заглавной
      */
-    private fun transformTextFirstCharToUpperCase(text: String) = if (text != "") {
-        text.substring(0, 1).toUpperCase() + text.substring(1)
-    } else ""
+    private fun transformTextFirstCharToUpperCase(text: String): String {
+        if (text.isBlank()) {
+            return text
+        }
+
+        return text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1)
+    }
 }
