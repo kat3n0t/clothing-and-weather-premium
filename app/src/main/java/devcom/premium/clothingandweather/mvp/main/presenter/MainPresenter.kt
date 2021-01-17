@@ -2,6 +2,7 @@ package devcom.premium.clothingandweather.mvp.main.presenter
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.SettingsActivity
@@ -16,7 +17,7 @@ import org.json.JSONObject
 @InjectViewState
 class MainPresenter : MvpPresenter<IMainView>() {
 
-    private var handler: Handler = Handler()
+    private var handler: Handler = Handler(Looper.getMainLooper())
     private val clothes = Clothes()
 
     override fun onFirstViewAttach() {
@@ -63,6 +64,7 @@ class MainPresenter : MvpPresenter<IMainView>() {
     ) {
         viewState.switchInfoVisibility(false)
         viewState.switchLoadingVisibility(true)
+        viewState.title(context.getString(R.string.loading))
 
         object : Thread() {
             override fun run() {
@@ -72,8 +74,6 @@ class MainPresenter : MvpPresenter<IMainView>() {
                         ?: throw DataNotFoundException(context)
 
                     handler.post {
-                        viewState.title(context.getString(R.string.loading))
-
                         val dayJSON: JSONObject = DataModel.weatherDay(json, weather.type)
                             ?: throw DataNotFoundException(context)
 
