@@ -82,12 +82,10 @@ class AppWidget : AppWidgetProvider() {
 
             object : Thread() {
                 override fun run() {
-                    try {
-                        val weatherApi = WeatherApi(city)
-                        val json: JSONObject = weatherApi.data(WeatherType.FORECAST_TODAY)
-                            ?: throw DataNotFoundException(context)
-
-                        handler.post {
+                    handler.post {
+                        try {
+                            val json: JSONObject = WeatherApi(city).data(WeatherType.FORECAST_TODAY)
+                                ?: throw DataNotFoundException(context)
                             val dayJSON = DataModel.weatherDay(json, WeatherType.FORECAST_TODAY)
                                 ?: throw DataNotFoundException(context)
 
@@ -135,9 +133,9 @@ class AppWidget : AppWidgetProvider() {
 
                             appWidgetManager.updateAppWidget(appWidgetId, views)
                             hasLoadedData = true
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
                     }
                 }
             }.start()

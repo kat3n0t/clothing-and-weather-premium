@@ -67,12 +67,11 @@ class MainPresenter : MvpPresenter<IMainView>() {
 
         object : Thread() {
             override fun run() {
-                try {
-                    val weatherApi = WeatherApi(city)
-                    val json: JSONObject = weatherApi.data(weather.type)
-                        ?: throw DataNotFoundException(context)
-
-                    handler.post {
+                handler.post {
+                    try {
+                        val weatherApi = WeatherApi(city)
+                        val json: JSONObject = weatherApi.data(weather.type)
+                            ?: throw DataNotFoundException(context)
                         val dayJSON: JSONObject = DataModel.weatherDay(json, weather.type)
                             ?: throw DataNotFoundException(context)
 
@@ -97,15 +96,15 @@ class MainPresenter : MvpPresenter<IMainView>() {
 
                         viewState.switchLoadingVisibility(false)
                         viewState.switchInfoVisibility(true)
-                    }
-                } catch (e: Exception) {
-                    handler.removeCallbacksAndMessages(null)
-                    handler.post {
-                        viewState.switchLoadingVisibility(false)
-                        viewState.switchInfoVisibility(false)
-                        e.message?.let {
-                            if (e is DataNotFoundException) {
-                                viewState.title(it)
+                    } catch (e: Exception) {
+                        handler.removeCallbacksAndMessages(null)
+                        handler.post {
+                            viewState.switchLoadingVisibility(false)
+                            viewState.switchInfoVisibility(false)
+                            e.message?.let {
+                                if (e is DataNotFoundException) {
+                                    viewState.title(it)
+                                }
                             }
                         }
                     }
