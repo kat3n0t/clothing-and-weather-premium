@@ -82,24 +82,23 @@ class AppWidget : AppWidgetProvider() {
 
             object : Thread() {
                 override fun run() {
-                    handler.post {
-                        try {
-                            val json: JSONObject = WeatherApi(city).data(WeatherType.FORECAST_TODAY)
-                                ?: throw DataNotFoundException(context)
-                            val dayJSON = DataModel.weatherDay(json, WeatherType.FORECAST_TODAY)
-                                ?: throw DataNotFoundException(context)
+                    try {
+                        val json: JSONObject = WeatherApi(city).data(WeatherType.FORECAST_TODAY)
+                            ?: throw DataNotFoundException(context)
+                        val dayJSON = DataModel.weatherDay(json, WeatherType.FORECAST_TODAY)
+                            ?: throw DataNotFoundException(context)
 
-                            val mainDataObject = dayJSON.getJSONObject("main")
-                            val windDataObject = dayJSON.getJSONObject("wind")
+                        val mainDataObject = dayJSON.getJSONObject("main")
+                        val windDataObject = dayJSON.getJSONObject("wind")
 
-                            val weather = Weather(
-                                mainDataObject.getDouble("temp"),
-                                windDataObject.getDouble("speed"),
-                                mainDataObject.getDouble("humidity")
-                            )
+                        val weather = Weather(
+                            mainDataObject.getDouble("temp"),
+                            windDataObject.getDouble("speed"),
+                            mainDataObject.getDouble("humidity")
+                        )
 
-                            val views =
-                                RemoteViews(context.packageName, R.layout.app_widget)
+                        handler.post {
+                            val views = RemoteViews(context.packageName, R.layout.app_widget)
                             views.setTextViewText(
                                 R.id.appwidget_text_weather,
                                 DataModel.title(weatherDegree, weather)
@@ -133,9 +132,9 @@ class AppWidget : AppWidgetProvider() {
 
                             appWidgetManager.updateAppWidget(appWidgetId, views)
                             hasLoadedData = true
-                        } catch (e: Exception) {
-                            e.printStackTrace()
                         }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
             }.start()
