@@ -1,5 +1,5 @@
 <resources>
-    <style name="CawTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="CawTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkAndText</item>
         <item name="colorAccent">@color/colorPrimary</item>
