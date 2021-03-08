@@ -8,14 +8,13 @@
     android:screenOrientation="landscape">
 
     <FrameLayout
-        android:id="@+id/container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/model"
+            android:id="@+id/ivModel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -46,7 +45,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView_speed"
+                android:id="@+id/tvSpeed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -57,7 +56,7 @@
                 tools:visibility="visible" />
 
             <TextView
-                android:id="@+id/textView_humidity"
+                android:id="@+id/tvHumidity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -68,7 +67,7 @@
                 tools:visibility="visible" />
 
             <ImageView
-                android:id="@+id/imageView_icon"
+                android:id="@+id/ivIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="64dp"
                 android:adjustViewBounds="true"

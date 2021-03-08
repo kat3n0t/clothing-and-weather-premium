@@ -7,23 +7,29 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import devcom.premium.clothingandweather.common.storage.ConstStorage
 import devcom.premium.clothingandweather.common.storage.PreferencesStorage
-import kotlinx.android.synthetic.main.activity_location.*
+import devcom.premium.clothingandweather.databinding.ActivityLocationBinding
 import java.util.Locale
 
 class LocationActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityLocationBinding
 
     private lateinit var storage: PreferencesStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_location)
+
+        binding = ActivityLocationBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         storage = PreferencesStorage(this)
     }
 
     override fun onStart() {
         super.onStart()
-        btnCheck.setOnClickListener { onSaveLocation() }
+        binding.btnCheck.setOnClickListener { onSaveLocation() }
         showCurrentCity()
     }
 
@@ -42,21 +48,23 @@ class LocationActivity : AppCompatActivity() {
      */
     private fun showCurrentCity() {
         val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
-        tvActiveCity.text = city
+        binding.tvActiveCity.text = city
     }
 
     /**
      * Обрабатывает нажатие на кнопку сохранения
      */
     private fun onSaveLocation() {
-        val text = etCity.text.toString().trim()
-        if (text.isBlank()) {
-            tvCheck.visibility = View.VISIBLE
-            return
-        }
+        binding.apply {
+            val text = etCity.text.toString().trim()
+            if (text.isBlank()) {
+                tvCheck.visibility = View.VISIBLE
+                return
+            }
 
-        tvCheck.visibility = View.GONE
-        storage.putString(ConstStorage.TITLE_CITY, transformTextFirstCharToUpperCase(text))
+            tvCheck.visibility = View.GONE
+            storage.putString(ConstStorage.TITLE_CITY, transformTextFirstCharToUpperCase(text))
+        }
         showCurrentCity()
     }
 
