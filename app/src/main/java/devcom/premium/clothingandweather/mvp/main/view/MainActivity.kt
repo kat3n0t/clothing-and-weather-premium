@@ -18,9 +18,9 @@ import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.common.*
 import devcom.premium.clothingandweather.common.storage.PreferencesStorage
 import devcom.premium.clothingandweather.common.storage.ConstStorage
+import devcom.premium.clothingandweather.databinding.ActivityMainBinding
 import devcom.premium.clothingandweather.mvp.main.presenter.MainPresenter
 import devcom.premium.clothingandweather.mvp.model.DataModel
-import kotlinx.android.synthetic.main.activity_main.*
 import moxy.MvpAppCompatActivity
 import moxy.presenter.InjectPresenter
 
@@ -29,13 +29,20 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
     @InjectPresenter
     internal lateinit var presenter: MainPresenter
 
+    private lateinit var binding: ActivityMainBinding
+
     private lateinit var storage: PreferencesStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.CawTheme) // переход от темы .Launcher к обычной теме приложения
         super.onCreate(savedInstanceState)
+
         setOrientation()
-        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
         storage = PreferencesStorage(this)
     }
 
@@ -46,16 +53,18 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
     }
 
     override fun switchInfoVisibility(canVisible: Boolean) {
-        val visibility = if (canVisible) View.VISIBLE else View.INVISIBLE
+        binding.apply {
+            val visibility = if (canVisible) View.VISIBLE else View.INVISIBLE
 
-        textView_speed.visibility = visibility
-        textView_humidity.visibility = visibility
-        imageView_icon.visibility = visibility
+            tvSpeed.visibility = visibility
+            tvHumidity.visibility = visibility
+            ivIcon.visibility = visibility
+        }
     }
 
     override fun switchLoadingVisibility(canVisible: Boolean) {
         val visibility = if (canVisible) View.VISIBLE else View.GONE
-        prBar.visibility = visibility
+        binding.prBar.visibility = visibility
     }
 
     override fun title(title: String) {
@@ -89,8 +98,10 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
     }
 
     override fun setTextInfo(weather: Weather) {
-        textView_speed.text = DataModel.infoWindSpeed(this, weather.windSpeed)
-        textView_humidity.text = DataModel.infoHumidity(this, weather.humidity)
+        binding.apply {
+            tvSpeed.text = DataModel.infoWindSpeed(this@MainActivity, weather.windSpeed)
+            tvHumidity.text = DataModel.infoHumidity(this@MainActivity, weather.humidity)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -122,11 +133,11 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
     }
 
     override fun loadIcon(iconUri: Uri) {
-        Glide.with(this).load(iconUri).into(imageView_icon)
+        Glide.with(this).load(iconUri).into(binding.ivIcon)
     }
 
     override fun loadModel(@DrawableRes id: Int) {
-        model.setImageResource(id)
+        binding.ivModel.setImageResource(id)
     }
 
     /**

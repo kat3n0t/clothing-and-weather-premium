@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        kotlinVersion = '1.4.21'
-        moxyVersion = '2.0.2'
+        kotlinVersion = '1.4.31'
+        moxyVersion = '2.2.1'
         sdkVersion = 30
     }
     repositories {
@@ -9,7 +9,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
