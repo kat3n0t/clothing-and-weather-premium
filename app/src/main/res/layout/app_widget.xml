@@ -6,7 +6,7 @@
     android:baselineAligned="false"
     android:gravity="center"
     android:orientation="horizontal"
-    android:padding="@dimen/widget_margin">
+    android:padding="0dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
