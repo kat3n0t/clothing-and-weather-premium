@@ -24,11 +24,6 @@ class MainPresenter : MvpPresenter<IMainView>() {
         viewState.showDefaultModel()
     }
 
-    override fun attachView(view: IMainView?) {
-        super.attachView(view)
-        viewState.updateWeatherData()
-    }
-
     override fun detachView(view: IMainView?) {
         handler.removeCallbacksAndMessages(null)
         super.detachView(view)

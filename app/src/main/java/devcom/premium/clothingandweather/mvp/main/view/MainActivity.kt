@@ -4,9 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.net.Uri
+import android.net.*
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
@@ -16,8 +14,8 @@ import androidx.annotation.DrawableRes
 import com.bumptech.glide.Glide
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.common.*
-import devcom.premium.clothingandweather.common.storage.PreferencesStorage
 import devcom.premium.clothingandweather.common.storage.ConstStorage
+import devcom.premium.clothingandweather.common.storage.PreferencesStorage
 import devcom.premium.clothingandweather.databinding.ActivityMainBinding
 import devcom.premium.clothingandweather.mvp.main.presenter.MainPresenter
 import devcom.premium.clothingandweather.mvp.model.DataModel
@@ -33,6 +31,16 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
 
     private lateinit var storage: PreferencesStorage
 
+    private val connectMonitor by lazy {
+        object : ConnectionStateMonitor() {
+            override fun onAvailable(network: Network) {
+                runOnUiThread {
+                    updateWeatherData()
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.CawTheme) // переход от темы .Launcher к обычной теме приложения
         super.onCreate(savedInstanceState)
@@ -44,6 +52,7 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
         setContentView(view)
 
         storage = PreferencesStorage(this)
+        connectMonitor.enable(this)
     }
 
     override fun showDefaultModel() {

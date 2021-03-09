@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NavUtils
 import devcom.premium.clothingandweather.common.storage.ConstStorage
 import devcom.premium.clothingandweather.common.storage.PreferencesStorage
 import devcom.premium.clothingandweather.databinding.ActivityLocationBinding
@@ -36,7 +35,7 @@ class LocationActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                NavUtils.navigateUpFromSameTask(this)
+                onBackPressed()
                 return true
             }
         }

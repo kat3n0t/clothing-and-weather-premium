@@ -6,7 +6,7 @@ android {
     compileSdkVersion sdkVersion
     defaultConfig {
         applicationId "devcom.premium.clothingandweather"
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion sdkVersion
         versionCode 13
         versionName "1.4.1"
