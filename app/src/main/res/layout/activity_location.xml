@@ -21,33 +21,42 @@
 
             <TextView
                 android:id="@+id/tvCurrentCity"
+                style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:text="@string/cur_city"
-                android:textSize="18sp" />
+                android:text="@string/cur_city" />
 
             <TextView
                 android:id="@+id/tvActiveCity"
+                style="@style/TextAppearance.MaterialComponents.Subtitle1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_toEndOf="@+id/tvCurrentCity"
+                android:ellipsize="end"
                 android:gravity="center_vertical"
+                android:maxLines="2"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp" />
+                tools:text="Kemerovo, RU" />
         </RelativeLayout>
 
-        <EditText
-            android:id="@+id/etCity"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:dropDownWidth="match_parent"
-            android:dropDownHeight="wrap_content"
-            android:hint="@string/city_hint"
-            android:importantForAutofill="no"
-            android:inputType="textCapWords|textAutoCorrect|textPostalAddress" />
+            android:hint="@string/city_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etCity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:dropDownWidth="match_parent"
+                android:dropDownHeight="wrap_content"
+                android:importantForAutofill="no"
+                android:inputType="textCapWords|textAutoCorrect|textPostalAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -64,6 +73,7 @@
 
             <TextView
                 android:id="@+id/tvCheck"
+                style="@style/TextAppearance.MaterialComponents.Body2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -71,11 +81,11 @@
                 android:text="@string/weather_data_not_found"
                 android:textAlignment="center"
                 android:textAllCaps="false"
-                android:textSize="14sp"
-                android:visibility="invisible"
+                android:visibility="gone"
                 app:layout_constraintBaseline_toBaselineOf="@+id/btnCheck"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/btnCheck" />
+                app:layout_constraintStart_toEndOf="@+id/btnCheck"
+                tools:visibility="visible" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
