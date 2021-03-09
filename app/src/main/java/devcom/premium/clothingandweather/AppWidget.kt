@@ -83,25 +83,22 @@ class AppWidget : AppWidgetProvider() {
             object : Thread() {
                 override fun run() {
                     try {
-                        val weatherApi = WeatherApi(city)
-                        val json: JSONObject = weatherApi.data(WeatherType.FORECAST_TODAY)
+                        val json: JSONObject = WeatherApi(city).data(WeatherType.FORECAST_TODAY)
+                            ?: throw DataNotFoundException(context)
+                        val dayJSON = DataModel.weatherDay(json, WeatherType.FORECAST_TODAY)
                             ?: throw DataNotFoundException(context)
 
+                        val mainDataObject = dayJSON.getJSONObject("main")
+                        val windDataObject = dayJSON.getJSONObject("wind")
+
+                        val weather = Weather(
+                            mainDataObject.getDouble("temp"),
+                            windDataObject.getDouble("speed"),
+                            mainDataObject.getDouble("humidity")
+                        )
+
                         handler.post {
-                            val dayJSON = DataModel.weatherDay(json, WeatherType.FORECAST_TODAY)
-                                ?: throw DataNotFoundException(context)
-
-                            val mainDataObject = dayJSON.getJSONObject("main")
-                            val windDataObject = dayJSON.getJSONObject("wind")
-
-                            val weather = Weather(
-                                mainDataObject.getDouble("temp"),
-                                windDataObject.getDouble("speed"),
-                                mainDataObject.getDouble("humidity")
-                            )
-
-                            val views =
-                                RemoteViews(context.packageName, R.layout.app_widget)
+                            val views = RemoteViews(context.packageName, R.layout.app_widget)
                             views.setTextViewText(
                                 R.id.appwidget_text_weather,
                                 DataModel.title(weatherDegree, weather)

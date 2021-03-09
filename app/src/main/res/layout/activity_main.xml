@@ -1,66 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:screenOrientation="portrait"
-    tools:context="devcom.premium.clothingandweather.MainActivity">
+    android:screenOrientation="portrait">
 
     <ImageView
-        android:id="@+id/imageView_icon"
+        android:id="@+id/ivIcon"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:adjustViewBounds="true"
         android:contentDescription="@string/icon"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/container_info"
-        app:layout_constraintEnd_toStartOf="@+id/container_info"
-        app:layout_constraintTop_toTopOf="@+id/container_info" />
+        app:layout_constraintBottom_toBottomOf="@+id/llInfo"
+        app:layout_constraintEnd_toStartOf="@+id/llInfo"
+        app:layout_constraintTop_toTopOf="@+id/llInfo" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container_info"
+    <LinearLayout
+        android:id="@+id/llInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textView_speed"
+            android:id="@+id/tvSpeed"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
             android:text="@string/wind"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toTopOf="@+id/textView_humidity"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <TextView
-            android:id="@+id/textView_humidity"
+            android:id="@+id/tvHumidity"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/humidity"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            android:visibility="invisible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView_speed" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/prBar"
@@ -70,10 +58,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/container_info" />
+        app:layout_constraintTop_toTopOf="@+id/llInfo" />
 
     <ImageView
-        android:id="@+id/model"
+        android:id="@+id/ivModel"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginTop="24dp"
@@ -84,5 +72,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/container_info" />
+        app:layout_constraintTop_toBottomOf="@id/llInfo" />
 </androidx.constraintlayout.widget.ConstraintLayout>

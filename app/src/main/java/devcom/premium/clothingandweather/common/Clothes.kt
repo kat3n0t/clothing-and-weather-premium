@@ -2,7 +2,7 @@ package devcom.premium.clothingandweather.common
 
 import devcom.premium.clothingandweather.R
 
-class Clothes {
+class Clothes(private val clothing: ClothingConfig) {
     private val range100n25n = -100.0..-25.0
     private val range100n5n = -100.0..-5.0
     private val range25n5n = -25.0..-5.0
@@ -11,7 +11,7 @@ class Clothes {
     private val range15p25p = 15.0..25.0
     private val range25p45p = 25.0..45.0
 
-    fun clothesId(clothing: ClothingConfig, temperature: Double): Int {
+    fun clothesId(temperature: Double): Int {
         if (clothing.gender == Gender.MAN) {
             when (clothing.style) {
                 Style.CASUAL -> return when (temperature) {
