@@ -38,16 +38,22 @@
                 android:textSize="18sp" />
         </RelativeLayout>
 
-        <EditText
-            android:id="@+id/etCity"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:dropDownWidth="match_parent"
-            android:dropDownHeight="wrap_content"
-            android:hint="@string/city_hint"
-            android:importantForAutofill="no"
-            android:inputType="textCapWords|textAutoCorrect|textPostalAddress" />
+            android:hint="@string/city_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etCity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:dropDownWidth="match_parent"
+                android:dropDownHeight="wrap_content"
+                android:importantForAutofill="no"
+                android:inputType="textCapWords|textAutoCorrect|textPostalAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
