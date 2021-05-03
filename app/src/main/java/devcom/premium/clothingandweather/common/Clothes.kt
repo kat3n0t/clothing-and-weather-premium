@@ -1,15 +1,9 @@
 package devcom.premium.clothingandweather.common
 
 import devcom.premium.clothingandweather.R
+import devcom.premium.clothingandweather.data.ClothingConfig
 
 class Clothes(private val clothing: ClothingConfig) {
-    private val range100n25n = -100.0..-25.0
-    private val range100n5n = -100.0..-5.0
-    private val range25n5n = -25.0..-5.0
-    private val range5n5p = -5.0..5.0
-    private val range5p15p = 5.0..15.0
-    private val range15p25p = 15.0..25.0
-    private val range25p45p = 25.0..45.0
 
     fun clothesId(temperature: Double): Int {
         if (clothing.gender == Gender.MAN) {
@@ -71,5 +65,15 @@ class Clothes(private val clothing: ClothingConfig) {
             }
         }
         return R.drawable.man_default
+    }
+
+    companion object {
+        private val range100n25n = -100.0..-25.0
+        private val range100n5n = -100.0..-5.0
+        private val range25n5n = -25.0..-5.0
+        private val range5n5p = -5.0..5.0
+        private val range5p15p = 5.0..15.0
+        private val range15p25p = 15.0..25.0
+        private val range25p45p = 25.0..45.0
     }
 }

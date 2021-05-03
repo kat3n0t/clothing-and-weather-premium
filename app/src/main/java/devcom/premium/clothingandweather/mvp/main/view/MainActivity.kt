@@ -1,11 +1,9 @@
 package devcom.premium.clothingandweather.mvp.main.view
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.*
-import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -16,9 +14,11 @@ import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.common.*
 import devcom.premium.clothingandweather.common.storage.ConstStorage
 import devcom.premium.clothingandweather.common.storage.PreferencesStorage
+import devcom.premium.clothingandweather.data.ClothingConfig
+import devcom.premium.clothingandweather.data.DataModel
+import devcom.premium.clothingandweather.data.WeatherConfig
 import devcom.premium.clothingandweather.databinding.ActivityMainBinding
 import devcom.premium.clothingandweather.mvp.main.presenter.MainPresenter
-import devcom.premium.clothingandweather.mvp.model.DataModel
 import moxy.MvpAppCompatActivity
 import moxy.presenter.InjectPresenter
 
@@ -27,12 +27,12 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
     @InjectPresenter
     internal lateinit var presenter: MainPresenter
 
-    private lateinit var binding: ActivityMainBinding
-
     private lateinit var storage: PreferencesStorage
 
+    private val binding: ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
     private val connectMonitor by lazy {
-        object : ConnectionStateMonitor() {
+        object : ConnectionStateMonitor(this@MainActivity) {
             override fun onAvailable(network: Network) {
                 runOnUiThread {
                     updateWeatherData()
@@ -47,16 +47,25 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
 
         setOrientation()
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
         storage = PreferencesStorage(this)
-        connectMonitor.enable(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        connectMonitor.enable()
+    }
+
+    override fun onStop() {
+        connectMonitor.disable()
+        super.onStop()
     }
 
     override fun showDefaultModel() {
-        val genderPref = storage.value(ConstStorage.TITLE_GENDER, "0")!!.toInt()
+        val genderPref =
+            storage.value(ConstStorage.TITLE_GENDER, ConstStorage.DEFAULT_VALUE)!!.toInt()
         val gender = IntExtensions.toGender(genderPref)
         loadModel(if (gender == Gender.MAN) R.drawable.man_default else R.drawable.woman_default)
     }
@@ -81,21 +90,25 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
     }
 
     override fun updateWeatherData() {
-        if (!networkAvailable()) {
+        if (!connectMonitor.networkAvailable()) {
             setTitle(R.string.waiting_for_network)
             return
         }
 
-        val genderPref = storage.value(ConstStorage.TITLE_GENDER, "0")!!.toInt()
+        val genderPref =
+            storage.value(ConstStorage.TITLE_GENDER, ConstStorage.DEFAULT_VALUE)!!.toInt()
         val gender = IntExtensions.toGender(genderPref) ?: return
 
-        val stylePref = storage.value(ConstStorage.TITLE_STYLE, "0")!!.toInt()
+        val stylePref =
+            storage.value(ConstStorage.TITLE_STYLE, ConstStorage.DEFAULT_VALUE)!!.toInt()
         val style = IntExtensions.toStyle(stylePref) ?: return
 
-        val weatherDegreePref = storage.value(ConstStorage.TITLE_DEGREE, "0")!!.toInt()
+        val weatherDegreePref =
+            storage.value(ConstStorage.TITLE_DEGREE, ConstStorage.DEFAULT_VALUE)!!.toInt()
         val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
 
-        val weatherTypePref = storage.value(ConstStorage.TITLE_DATE, "0")!!.toInt()
+        val weatherTypePref =
+            storage.value(ConstStorage.TITLE_DATE, ConstStorage.DEFAULT_VALUE)!!.toInt()
         val weatherType = IntExtensions.toWeatherType(weatherTypePref) ?: return
 
         val clothing = ClothingConfig(gender, style)
@@ -161,30 +174,5 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
             ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         else
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-    }
-
-    /**
-     * Проверяет доступность интернет-соединения
-     */
-    private fun networkAvailable(): Boolean {
-        val connectivityManager =
-            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val networkCapabilities = connectivityManager.activeNetwork ?: return false
-            val actNw =
-                connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
-            return when {
-                actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-                else -> false
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            run {
-                val networkInfo = connectivityManager.activeNetworkInfo
-                return networkInfo != null && networkInfo.isConnected
-            }
-        }
     }
 }

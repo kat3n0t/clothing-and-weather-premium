@@ -11,4 +11,5 @@ object ConstStorage {
     const val TITLE_DATE = "date"
 
     const val DEFAULT_CITY = "Kemerovo, RU"
+    const val DEFAULT_VALUE = "0"
 }

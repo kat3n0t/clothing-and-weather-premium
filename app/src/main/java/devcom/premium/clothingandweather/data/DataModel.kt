@@ -1,4 +1,4 @@
-package devcom.premium.clothingandweather.mvp.model
+package devcom.premium.clothingandweather.data
 
 import android.content.Context
 import devcom.premium.clothingandweather.R

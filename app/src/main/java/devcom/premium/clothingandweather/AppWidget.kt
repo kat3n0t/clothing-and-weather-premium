@@ -6,23 +6,17 @@ import android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.RemoteViews
-import devcom.premium.clothingandweather.common.DataNotFoundException
-import devcom.premium.clothingandweather.common.IntExtensions
-import devcom.premium.clothingandweather.common.Weather
-import devcom.premium.clothingandweather.common.WeatherType
-import devcom.premium.clothingandweather.common.storage.PreferencesStorage
+import devcom.premium.clothingandweather.common.*
 import devcom.premium.clothingandweather.common.storage.ConstStorage
+import devcom.premium.clothingandweather.common.storage.PreferencesStorage
+import devcom.premium.clothingandweather.data.DataModel
 import devcom.premium.clothingandweather.data.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.MainActivity
-import devcom.premium.clothingandweather.mvp.model.DataModel
 import org.json.JSONObject
 
 class AppWidget : AppWidgetProvider() {
@@ -68,16 +62,18 @@ class AppWidget : AppWidgetProvider() {
 
         internal fun updateAppWidget(
             context: Context, appWidgetManager: AppWidgetManager,
-            appWidgetId: Int
+            appWidgetId: Int,
         ) {
-            if (!networkAvailable(context)) {
+            val connectionStateMonitor = ConnectionStateMonitor(context)
+            if (!connectionStateMonitor.networkAvailable()) {
                 return
             }
 
             val storage = PreferencesStorage(context)
             val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
 
-            val weatherDegreePref = storage.value(ConstStorage.TITLE_DEGREE, "0")!!.toInt()
+            val weatherDegreePref =
+                storage.value(ConstStorage.TITLE_DEGREE, ConstStorage.DEFAULT_VALUE)!!.toInt()
             val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
 
             object : Thread() {
@@ -138,33 +134,6 @@ class AppWidget : AppWidgetProvider() {
                     }
                 }
             }.start()
-        }
-
-        /**
-         * Проверяет доступность интернет-соединения
-         *
-         * @param context [Context]
-         */
-        private fun networkAvailable(context: Context): Boolean {
-            val connectivityManager =
-                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val networkCapabilities = connectivityManager.activeNetwork ?: return false
-                val actNw =
-                    connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
-                return when {
-                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-                    else -> false
-                }
-            } else {
-                @Suppress("DEPRECATION")
-                run {
-                    val networkInfo = connectivityManager.activeNetworkInfo
-                    return networkInfo != null && networkInfo.isConnected
-                }
-            }
         }
     }
 }
