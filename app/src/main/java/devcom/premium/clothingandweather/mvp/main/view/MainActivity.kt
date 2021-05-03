@@ -16,9 +16,11 @@ import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.common.*
 import devcom.premium.clothingandweather.common.storage.ConstStorage
 import devcom.premium.clothingandweather.common.storage.PreferencesStorage
+import devcom.premium.clothingandweather.data.ClothingConfig
+import devcom.premium.clothingandweather.data.WeatherConfig
 import devcom.premium.clothingandweather.databinding.ActivityMainBinding
 import devcom.premium.clothingandweather.mvp.main.presenter.MainPresenter
-import devcom.premium.clothingandweather.mvp.model.DataModel
+import devcom.premium.clothingandweather.data.DataModel
 import moxy.MvpAppCompatActivity
 import moxy.presenter.InjectPresenter
 

@@ -22,7 +22,7 @@ import devcom.premium.clothingandweather.common.storage.PreferencesStorage
 import devcom.premium.clothingandweather.common.storage.ConstStorage
 import devcom.premium.clothingandweather.data.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.MainActivity
-import devcom.premium.clothingandweather.mvp.model.DataModel
+import devcom.premium.clothingandweather.data.DataModel
 import org.json.JSONObject
 
 class AppWidget : AppWidgetProvider() {

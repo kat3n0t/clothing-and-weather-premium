@@ -1,6 +1,7 @@
 package devcom.premium.clothingandweather.common
 
 import devcom.premium.clothingandweather.R
+import devcom.premium.clothingandweather.data.ClothingConfig
 
 class Clothes(private val clothing: ClothingConfig) {
     private val range100n25n = -100.0..-25.0

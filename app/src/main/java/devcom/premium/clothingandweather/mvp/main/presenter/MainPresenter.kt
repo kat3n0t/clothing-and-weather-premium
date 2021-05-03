@@ -7,9 +7,11 @@ import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.SettingsActivity
 import devcom.premium.clothingandweather.common.*
+import devcom.premium.clothingandweather.data.ClothingConfig
 import devcom.premium.clothingandweather.data.WeatherApi
+import devcom.premium.clothingandweather.data.WeatherConfig
 import devcom.premium.clothingandweather.mvp.main.view.IMainView
-import devcom.premium.clothingandweather.mvp.model.DataModel
+import devcom.premium.clothingandweather.data.DataModel
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import org.json.JSONObject
