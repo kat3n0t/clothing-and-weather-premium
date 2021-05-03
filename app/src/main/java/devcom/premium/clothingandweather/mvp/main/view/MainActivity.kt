@@ -29,9 +29,9 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
     @InjectPresenter
     internal lateinit var presenter: MainPresenter
 
-    private lateinit var binding: ActivityMainBinding
-
     private lateinit var storage: PreferencesStorage
+
+    private val binding: ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     private val connectMonitor by lazy {
         object : ConnectionStateMonitor() {
@@ -49,7 +49,6 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
 
         setOrientation()
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
@@ -58,7 +57,8 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
     }
 
     override fun showDefaultModel() {
-        val genderPref = storage.value(ConstStorage.TITLE_GENDER, "0")!!.toInt()
+        val genderPref =
+            storage.value(ConstStorage.TITLE_GENDER, ConstStorage.DEFAULT_VALUE)!!.toInt()
         val gender = IntExtensions.toGender(genderPref)
         loadModel(if (gender == Gender.MAN) R.drawable.man_default else R.drawable.woman_default)
     }
@@ -88,16 +88,20 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
             return
         }
 
-        val genderPref = storage.value(ConstStorage.TITLE_GENDER, "0")!!.toInt()
+        val genderPref =
+            storage.value(ConstStorage.TITLE_GENDER, ConstStorage.DEFAULT_VALUE)!!.toInt()
         val gender = IntExtensions.toGender(genderPref) ?: return
 
-        val stylePref = storage.value(ConstStorage.TITLE_STYLE, "0")!!.toInt()
+        val stylePref =
+            storage.value(ConstStorage.TITLE_STYLE, ConstStorage.DEFAULT_VALUE)!!.toInt()
         val style = IntExtensions.toStyle(stylePref) ?: return
 
-        val weatherDegreePref = storage.value(ConstStorage.TITLE_DEGREE, "0")!!.toInt()
+        val weatherDegreePref =
+            storage.value(ConstStorage.TITLE_DEGREE, ConstStorage.DEFAULT_VALUE)!!.toInt()
         val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
 
-        val weatherTypePref = storage.value(ConstStorage.TITLE_DATE, "0")!!.toInt()
+        val weatherTypePref =
+            storage.value(ConstStorage.TITLE_DATE, ConstStorage.DEFAULT_VALUE)!!.toInt()
         val weatherType = IntExtensions.toWeatherType(weatherTypePref) ?: return
 
         val clothing = ClothingConfig(gender, style)

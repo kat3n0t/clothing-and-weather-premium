@@ -77,7 +77,8 @@ class AppWidget : AppWidgetProvider() {
             val storage = PreferencesStorage(context)
             val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
 
-            val weatherDegreePref = storage.value(ConstStorage.TITLE_DEGREE, "0")!!.toInt()
+            val weatherDegreePref =
+                storage.value(ConstStorage.TITLE_DEGREE, ConstStorage.DEFAULT_VALUE)!!.toInt()
             val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
 
             object : Thread() {

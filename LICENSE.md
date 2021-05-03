@@ -1,2 +1,1 @@
-
-Copyright (C) 2019 Vladislav
+Copyright (C) 2021 Vladislav Wirtenberger
