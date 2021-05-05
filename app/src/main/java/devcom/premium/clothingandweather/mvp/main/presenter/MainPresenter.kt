@@ -90,7 +90,7 @@ class MainPresenter : MvpPresenter<IMainView>() {
                         viewState.title(DataModel.title(weather.degree, weatherData))
                         viewState.setTextInfo(weatherData)
                         viewState.loadModel(clothes.clothesId(perceivedTemp))
-                        viewState.loadIcon(weatherApi.iconUrl(iconName))
+                        viewState.loadIcon(weatherApi.iconUri(iconName))
 
                         viewState.switchLoadingVisibility(false)
                         viewState.switchInfoVisibility(true)

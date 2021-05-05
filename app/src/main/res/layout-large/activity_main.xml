@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackgroundAndText"
     android:baselineAligned="false"
     android:orientation="horizontal"
     android:screenOrientation="landscape">
@@ -52,6 +53,7 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/wind"
                 android:textAlignment="center"
+                android:textColor="@color/colorPrimaryDarkAndText"
                 android:visibility="invisible"
                 tools:visibility="visible" />
 
@@ -63,6 +65,7 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/humidity"
                 android:textAlignment="center"
+                android:textColor="@color/colorPrimaryDarkAndText"
                 android:visibility="invisible"
                 tools:visibility="visible" />
 

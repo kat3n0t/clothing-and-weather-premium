@@ -19,7 +19,7 @@ class WeatherApi(private val city: String) {
      * @param imgId идентификатор иконки
      * @return ссылка на иконку
      */
-    fun iconUrl(imgId: String): Uri = Uri.parse("$OWM_LINK$OWN_IMG$imgId.png")
+    fun iconUri(imgId: String): Uri = Uri.parse("$OWM_LINK$OWN_IMG$imgId.png")
 
     /**
      * Возвращает [JSONObject] по типу погоды, если есть
