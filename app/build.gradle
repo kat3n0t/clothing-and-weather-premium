@@ -8,8 +8,8 @@ android {
         applicationId "devcom.premium.clothingandweather"
         minSdkVersion 21
         targetSdkVersion sdkVersion
-        versionCode 15
-        versionName "1.5.1"
+        versionCode 16
+        versionName "1.5.2"
 
         multiDexEnabled true
     }
