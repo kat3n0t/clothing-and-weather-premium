@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CawTheme.Launcher">
+        <item name="android:windowSplashscreenContent">@drawable/app_launcher_splash</item>
+    </style>
+</resources>
