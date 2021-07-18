@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/colorPrimary" />
+    <solid android:color="@color/curious_blue" />
     <gradient
         android:angle="90"
-        android:startColor="@color/colorPrimary"
-        android:centerColor="@color/colorPrimary"
-        android:endColor="@color/colorPrimaryTransparent" />
+        android:centerColor="@color/curious_blue"
+        android:endColor="@color/curious_blue_transparent"
+        android:startColor="@color/curious_blue" />
     <stroke
         android:width="2dp"
-        android:color="@color/colorWidgetStroke" />
+        android:color="@color/white_smoke_transparent" />
     <corners android:radius="4dp" />
 </shape>

@@ -24,7 +24,7 @@
             android:contentDescription="@string/app_name"
             android:text="@string/app_name"
             android:textAlignment="center"
-            android:textColor="@color/colorBackgroundAndText" />
+            android:textColor="@color/white_smoke" />
 
         <TextView
             android:id="@+id/appwidget_text_city"
@@ -37,7 +37,7 @@
             android:contentDescription="@string/city"
             android:text="@string/loading"
             android:textAlignment="center"
-            android:textColor="@color/colorBackgroundAndText"
+            android:textColor="@color/white_smoke"
             android:visibility="gone" />
 
     </RelativeLayout>
@@ -48,7 +48,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@color/colorBackgroundAndText"
+        android:background="@color/white_smoke"
         android:orientation="horizontal"
         android:visibility="gone" />
 
@@ -70,7 +70,7 @@
             android:contentDescription="@string/wind"
             android:text="@string/wind"
             android:textAlignment="center"
-            android:textColor="@color/colorBackgroundAndText"
+            android:textColor="@color/white_smoke"
             android:visibility="gone" />
 
         <TextView
@@ -84,7 +84,7 @@
             android:contentDescription="@string/humidity"
             android:text="@string/humidity"
             android:textAlignment="center"
-            android:textColor="@color/colorBackgroundAndText"
+            android:textColor="@color/white_smoke"
             android:visibility="gone" />
     </RelativeLayout>
 </LinearLayout>
