@@ -9,8 +9,8 @@ android {
         applicationId "devcom.premium.clothingandweather"
         minSdkVersion 21
         targetSdkVersion sdkVersion
-        versionCode 17
-        versionName "1.5.3"
+        versionCode 18
+        versionName "1.6"
     }
     buildTypes {
         release {
