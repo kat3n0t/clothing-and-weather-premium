@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -32,7 +33,7 @@ class AppWidget : AppWidgetProvider() {
 
     override fun onAppWidgetOptionsChanged(
         context: Context?,
-        appWidgetManager: AppWidgetManager?,
+        appWidgetManager: AppWidgetManager,
         appWidgetId: Int,
         newOptions: Bundle?
     ) {
@@ -52,7 +53,7 @@ class AppWidget : AppWidgetProvider() {
                 views.setViewVisibility(R.id.appwidget_text_speed, View.GONE)
                 views.setViewVisibility(R.id.appwidget_text_humidity, View.GONE)
             }
-            AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views)
+            appWidgetManager.updateAppWidget(appWidgetId, views)
         }
     }
 
@@ -122,8 +123,12 @@ class AppWidget : AppWidgetProvider() {
                             views.setViewVisibility(R.id.appwidget_text_humidity, visibility)
 
                             // переход на главную страницу приложения по клику
-                            val intent = Intent(context, MainActivity::class.java)
-                            val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+                            val pendingIntent = PendingIntent.getActivity(
+                                context, 0, Intent(context, MainActivity::class.java),
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                                    PendingIntent.FLAG_IMMUTABLE
+                                else 0
+                            )
                             views.setOnClickPendingIntent(R.id.layout_widget, pendingIntent)
 
                             appWidgetManager.updateAppWidget(appWidgetId, views)

@@ -16,4 +16,10 @@
     <style name="CawTheme.Launcher">
         <item name="android:windowBackground">@drawable/app_launcher_splash</item>
     </style>
+
+    <style name="CawTheme.AppWidget">
+        <item name="android:colorAccent">@color/white_smoke</item>
+        <item name="android:textColorPrimary">@color/white_smoke</item>
+        <item name="android:textColorSecondary">@color/white_smoke</item>
+    </style>
 </resources>
