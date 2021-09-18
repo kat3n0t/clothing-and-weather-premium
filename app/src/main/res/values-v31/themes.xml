@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CawTheme.AppWidget" parent="@android:style/Theme.DeviceDefault.DayNight">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="CawTheme.Launcher">
+        <item name="android:windowSplashScreenBackground">@color/white_smoke</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/app_launcher_splash</item>
+    </style>
+</resources>

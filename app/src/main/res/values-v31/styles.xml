@@ -2,7 +2,6 @@
 <resources>
 
     <style name="CawTheme.AppWidget.Container">
-        <item name="android:background">@drawable/app_widget_shape</item>
-        <item name="android:padding">0dp</item>
+        <item name="android:background">?android:attr/colorBackground</item>
     </style>
 </resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CawTheme" parent="CawTheme.Base">
+        <item name="colorSurface">@color/haiti</item>
+        <item name="colorOnSurface">@color/white_smoke</item>
+    </style>
+</resources>

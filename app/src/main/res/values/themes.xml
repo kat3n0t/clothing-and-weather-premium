@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CawTheme.Base" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/curious_blue</item>
+        <item name="colorOnPrimary">@color/white_smoke</item>
+        <item name="colorSecondary">@color/curious_blue</item>
+        <item name="colorOnSecondary">@color/white_smoke</item>
+    </style>
+
+    <style name="CawTheme" parent="CawTheme.Base">
+        <item name="colorSurface">@color/white_smoke</item>
+        <item name="colorOnSurface">@color/haiti</item>
+    </style>
+
+    <style name="CawTheme.Launcher">
+        <item name="android:windowBackground">@drawable/app_launcher_splash</item>
+    </style>
+
+    <style name="CawTheme.AppWidget">
+        <item name="android:colorAccent">@color/white_smoke</item>
+        <item name="android:textColorPrimary">@color/white_smoke</item>
+        <item name="android:textColorSecondary">@color/white_smoke</item>
+    </style>
+</resources>

@@ -44,13 +44,6 @@ interface IMainView : MvpView {
     fun setTextInfo(weather: Weather)
 
     /**
-     * Запускает целевую активность
-     *
-     * @param targetClass класс целевой активности
-     */
-    fun launchActivity(targetClass: Class<*>)
-
-    /**
      * Загружает иконку с погодой
      *
      * @param iconUri ссылка на иконку

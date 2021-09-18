@@ -32,20 +32,6 @@ class MainPresenter : MvpPresenter<IMainView>() {
     }
 
     /**
-     * Обрабатывает нажатие на пункт меню с местоположением
-     */
-    fun onLaunchLocation() {
-        viewState.launchActivity(LocationActivity::class.java)
-    }
-
-    /**
-     * Обрабатывает нажатие на пункт меню с настройками
-     */
-    fun onLaunchPreferences() {
-        viewState.launchActivity(SettingsActivity::class.java)
-    }
-
-    /**
      * Обрабатывает при обновлении соединения
      *
      * @param context [Context]

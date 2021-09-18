@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2778b9</color>
-    <color name="colorPrimaryTransparent">#EE2778b9</color>
-    <color name="colorPrimaryDarkAndText">#2f2d32</color>
-    <color name="colorBackgroundAndText">#F0F0F0</color>
-    <color name="colorWidgetStroke">#EEF0F0F0</color>
+    <color name="curious_blue">#2778B9</color>
+    <color name="curious_blue_transparent">#EE2778b9</color>
+    <color name="haiti">#2F2D32</color>
+    <color name="white_smoke">#F0F0F0</color>
+    <color name="white_smoke_transparent">#EEF0F0F0</color>
 </resources>

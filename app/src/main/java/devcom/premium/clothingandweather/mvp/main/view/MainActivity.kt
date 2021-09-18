@@ -1,6 +1,5 @@
 package devcom.premium.clothingandweather.mvp.main.view
 
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.*
@@ -10,7 +9,9 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.DrawableRes
 import com.bumptech.glide.Glide
+import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
+import devcom.premium.clothingandweather.SettingsActivity
 import devcom.premium.clothingandweather.common.*
 import devcom.premium.clothingandweather.common.storage.ConstStorage
 import devcom.premium.clothingandweather.common.storage.PreferencesStorage
@@ -18,11 +19,11 @@ import devcom.premium.clothingandweather.data.ClothingConfig
 import devcom.premium.clothingandweather.data.DataModel
 import devcom.premium.clothingandweather.data.WeatherConfig
 import devcom.premium.clothingandweather.databinding.ActivityMainBinding
+import devcom.premium.clothingandweather.mvp.ABaseMvpActivity
 import devcom.premium.clothingandweather.mvp.main.presenter.MainPresenter
-import moxy.MvpAppCompatActivity
 import moxy.presenter.InjectPresenter
 
-class MainActivity : MvpAppCompatActivity(), IMainView {
+class MainActivity : ABaseMvpActivity(), IMainView {
 
     @InjectPresenter
     internal lateinit var presenter: MainPresenter
@@ -138,20 +139,15 @@ class MainActivity : MvpAppCompatActivity(), IMainView {
                 true
             }
             R.id.navigation_btnPreferences -> {
-                presenter.onLaunchPreferences()
+                startActivity<SettingsActivity>()
                 true
             }
             R.id.navigation_btnLocation -> {
-                presenter.onLaunchLocation()
+                startActivity<LocationActivity>()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun launchActivity(targetClass: Class<*>) {
-        val intent = Intent(this, targetClass)
-        startActivity(intent)
     }
 
     override fun loadIcon(iconUri: Uri) {
