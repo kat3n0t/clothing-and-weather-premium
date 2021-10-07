@@ -19,6 +19,7 @@ import devcom.premium.clothingandweather.data.DataModel
 import devcom.premium.clothingandweather.data.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.MainActivity
 import org.json.JSONObject
+import kotlin.concurrent.thread
 
 class AppWidget : AppWidgetProvider() {
 
@@ -77,68 +78,66 @@ class AppWidget : AppWidgetProvider() {
                 storage.value(ConstStorage.TITLE_DEGREE, ConstStorage.DEFAULT_VALUE)!!.toInt()
             val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
 
-            object : Thread() {
-                override fun run() {
-                    try {
-                        val json: JSONObject = WeatherApi(city).data(WeatherType.FORECAST_TODAY)
-                            ?: throw DataNotFoundException(context)
-                        val dayJSON = DataModel.weatherDay(json, WeatherType.FORECAST_TODAY)
-                            ?: throw DataNotFoundException(context)
+            thread {
+                try {
+                    val json: JSONObject = WeatherApi(city).data(WeatherType.FORECAST_TODAY)
+                        ?: throw DataNotFoundException(context)
+                    val dayJSON = DataModel.weatherDay(json, WeatherType.FORECAST_TODAY)
+                        ?: throw DataNotFoundException(context)
 
-                        val mainDataObject = dayJSON.getJSONObject("main")
-                        val windDataObject = dayJSON.getJSONObject("wind")
+                    val mainDataObject = dayJSON.getJSONObject("main")
+                    val windDataObject = dayJSON.getJSONObject("wind")
 
-                        val weather = Weather(
-                            mainDataObject.getDouble("temp"),
-                            windDataObject.getDouble("speed"),
-                            mainDataObject.getDouble("humidity")
+                    val weather = Weather(
+                        mainDataObject.getDouble("temp"),
+                        windDataObject.getDouble("speed"),
+                        mainDataObject.getDouble("humidity")
+                    )
+
+                    handler.post {
+                        val views = RemoteViews(context.packageName, R.layout.app_widget)
+                        views.setTextViewText(
+                            R.id.appwidget_text_weather,
+                            DataModel.title(weatherDegree, weather)
+                        )
+                        views.setTextViewText(R.id.appwidget_text_city, city)
+                        views.setViewVisibility(R.id.appwidget_text_city, View.VISIBLE)
+                        views.setTextViewText(
+                            R.id.appwidget_text_speed,
+                            DataModel.infoWindSpeed(context, weather.windSpeed)
+                        )
+                        views.setTextViewText(
+                            R.id.appwidget_text_humidity,
+                            DataModel.infoHumidity(context, weather.humidity)
                         )
 
-                        handler.post {
-                            val views = RemoteViews(context.packageName, R.layout.app_widget)
-                            views.setTextViewText(
-                                R.id.appwidget_text_weather,
-                                DataModel.title(weatherDegree, weather)
-                            )
-                            views.setTextViewText(R.id.appwidget_text_city, city)
-                            views.setViewVisibility(R.id.appwidget_text_city, View.VISIBLE)
-                            views.setTextViewText(
-                                R.id.appwidget_text_speed,
-                                DataModel.infoWindSpeed(context, weather.windSpeed)
-                            )
-                            views.setTextViewText(
-                                R.id.appwidget_text_humidity,
-                                DataModel.infoHumidity(context, weather.humidity)
-                            )
-
-                            val bundle = appWidgetManager.getAppWidgetOptions(appWidgetId)
-                            val visibility = if (bundle.getInt(OPTION_APPWIDGET_MIN_WIDTH) > 250) {
-                                View.VISIBLE
-                            } else {
-                                View.GONE
-                            }
-                            views.setViewVisibility(R.id.widget_layout_weather_data, visibility)
-                            views.setViewVisibility(R.id.widget_layout_line, visibility)
-                            views.setViewVisibility(R.id.appwidget_text_speed, visibility)
-                            views.setViewVisibility(R.id.appwidget_text_humidity, visibility)
-
-                            // переход на главную страницу приложения по клику
-                            val pendingIntent = PendingIntent.getActivity(
-                                context, 0, Intent(context, MainActivity::class.java),
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                                    PendingIntent.FLAG_IMMUTABLE
-                                else 0
-                            )
-                            views.setOnClickPendingIntent(R.id.layout_widget, pendingIntent)
-
-                            appWidgetManager.updateAppWidget(appWidgetId, views)
-                            hasLoadedData = true
+                        val bundle = appWidgetManager.getAppWidgetOptions(appWidgetId)
+                        val visibility = if (bundle.getInt(OPTION_APPWIDGET_MIN_WIDTH) > 250) {
+                            View.VISIBLE
+                        } else {
+                            View.GONE
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                        views.setViewVisibility(R.id.widget_layout_weather_data, visibility)
+                        views.setViewVisibility(R.id.widget_layout_line, visibility)
+                        views.setViewVisibility(R.id.appwidget_text_speed, visibility)
+                        views.setViewVisibility(R.id.appwidget_text_humidity, visibility)
+
+                        // переход на главную страницу приложения по клику
+                        val pendingIntent = PendingIntent.getActivity(
+                            context, 0, Intent(context, MainActivity::class.java),
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                                PendingIntent.FLAG_IMMUTABLE
+                            else 0
+                        )
+                        views.setOnClickPendingIntent(R.id.layout_widget, pendingIntent)
+
+                        appWidgetManager.updateAppWidget(appWidgetId, views)
+                        hasLoadedData = true
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            }.start()
+            }
         }
     }
 }
