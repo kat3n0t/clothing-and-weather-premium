@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = '1.5.30'
+        kotlinVersion = '1.8.0'
         moxyVersion = '2.2.2'
         sdkVersion = 31
     }
@@ -9,7 +9,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.2'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
