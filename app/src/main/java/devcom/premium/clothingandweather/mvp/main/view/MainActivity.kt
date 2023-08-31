@@ -2,7 +2,8 @@ package devcom.premium.clothingandweather.mvp.main.view
 
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.net.*
+import android.net.Network
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -12,13 +13,16 @@ import com.bumptech.glide.Glide
 import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.SettingsActivity
-import devcom.premium.clothingandweather.common.*
-import devcom.premium.clothingandweather.common.storage.ConstStorage
-import devcom.premium.clothingandweather.common.storage.PreferencesStorage
+import devcom.premium.clothingandweather.common.ConnectionStateMonitor
+import devcom.premium.clothingandweather.domain.Gender
+import devcom.premium.clothingandweather.common.IntExtensions
+import devcom.premium.clothingandweather.data.storage.ConstStorage
+import devcom.premium.clothingandweather.data.storage.PreferencesStorage
 import devcom.premium.clothingandweather.data.ClothingConfig
 import devcom.premium.clothingandweather.data.DataModel
 import devcom.premium.clothingandweather.data.WeatherConfig
 import devcom.premium.clothingandweather.databinding.ActivityMainBinding
+import devcom.premium.clothingandweather.domain.Weather
 import devcom.premium.clothingandweather.mvp.ABaseMvpActivity
 import devcom.premium.clothingandweather.mvp.main.presenter.MainPresenter
 import moxy.presenter.InjectPresenter
@@ -67,7 +71,7 @@ class MainActivity : ABaseMvpActivity(), IMainView {
     override fun showDefaultModel() {
         val genderPref =
             storage.value(ConstStorage.TITLE_GENDER, ConstStorage.DEFAULT_VALUE)!!.toInt()
-        val gender = IntExtensions.toGender(genderPref)
+        val gender = Gender.values()[genderPref]
         loadModel(if (gender == Gender.MAN) R.drawable.man_default else R.drawable.woman_default)
     }
 
@@ -90,6 +94,8 @@ class MainActivity : ABaseMvpActivity(), IMainView {
         this.title = title
     }
 
+    // todo: тут и проверка на not-null, и завершение без обновления в случае ошибки.
+    //  Убрать !!, прокинуть в презентер потенциально неполные данные и обработать дальнейшее развитие событий на уровне презентера
     override fun updateWeatherData() {
         if (!connectMonitor.networkAvailable()) {
             setTitle(R.string.waiting_for_network)

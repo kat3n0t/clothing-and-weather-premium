@@ -2,13 +2,14 @@ package devcom.premium.clothingandweather.data
 
 import android.content.Context
 import devcom.premium.clothingandweather.R
-import devcom.premium.clothingandweather.common.Degree
-import devcom.premium.clothingandweather.common.Weather
-import devcom.premium.clothingandweather.common.WeatherType
+import devcom.premium.clothingandweather.domain.Degree
+import devcom.premium.clothingandweather.domain.Weather
+import devcom.premium.clothingandweather.domain.WeatherType
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
+// todo: вынести в репозиторий
 object DataModel {
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)

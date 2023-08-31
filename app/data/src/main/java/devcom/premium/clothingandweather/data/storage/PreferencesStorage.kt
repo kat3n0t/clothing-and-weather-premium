@@ -1,12 +1,13 @@
-package devcom.premium.clothingandweather.common.storage
+package devcom.premium.clothingandweather.data.storage
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 
 /**
  * Реализация хранилища SharedPreferences
  */
-internal class PreferencesStorage(context: Context) {
+class PreferencesStorage(context: Context) {
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -26,5 +27,5 @@ internal class PreferencesStorage(context: Context) {
      * @param value значение
      */
     fun putString(key: String, value: String?) =
-        sharedPreferences.edit().putString(key, value).apply()
+        sharedPreferences.edit { putString(key, value) }
 }

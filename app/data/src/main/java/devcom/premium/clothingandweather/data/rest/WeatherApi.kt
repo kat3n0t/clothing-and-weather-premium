@@ -1,7 +1,7 @@
-package devcom.premium.clothingandweather.data
+package devcom.premium.clothingandweather.data.rest
 
 import android.net.Uri
-import devcom.premium.clothingandweather.common.WeatherType
+import devcom.premium.clothingandweather.domain.WeatherType
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -11,6 +11,7 @@ import java.net.URL
 /**
  * Вспомогательный класс для работы с API openweathermap.org
  */
+@Deprecated("запилить ретрофит или хотя бы разбить архитектурно")
 class WeatherApi(private val city: String) {
 
     /**

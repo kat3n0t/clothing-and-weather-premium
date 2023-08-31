@@ -2,6 +2,8 @@ package devcom.premium.clothingandweather.common
 
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.data.ClothingConfig
+import devcom.premium.clothingandweather.domain.Gender
+import devcom.premium.clothingandweather.domain.Style
 
 class Clothes(private val clothing: ClothingConfig) {
 

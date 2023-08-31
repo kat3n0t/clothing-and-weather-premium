@@ -2,7 +2,8 @@ buildscript {
     ext {
         kotlinVersion = '1.8.0'
         moxyVersion = '2.2.2'
-        sdkVersion = 31
+        androidxCoreVersion = "1.6.0"
+        androidxPreferencesVersion = "1.2.1"
     }
     repositories {
         google()
@@ -23,4 +24,12 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+project.ext {
+    def sdkVersion = 31
+
+    compileSdkVersion = sdkVersion
+    targetSdkVersion = sdkVersion
+    minSdkVersion = 21
 }

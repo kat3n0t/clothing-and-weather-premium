@@ -6,11 +6,11 @@ import android.os.Looper
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.common.Clothes
 import devcom.premium.clothingandweather.common.DataNotFoundException
-import devcom.premium.clothingandweather.common.Weather
 import devcom.premium.clothingandweather.data.ClothingConfig
 import devcom.premium.clothingandweather.data.DataModel
-import devcom.premium.clothingandweather.data.WeatherApi
+import devcom.premium.clothingandweather.data.rest.WeatherApi
 import devcom.premium.clothingandweather.data.WeatherConfig
+import devcom.premium.clothingandweather.domain.Weather
 import devcom.premium.clothingandweather.mvp.main.view.IMainView
 import moxy.InjectViewState
 import moxy.MvpPresenter
@@ -60,21 +60,21 @@ class MainPresenter : MvpPresenter<IMainView>() {
 
                 val mainDataObject = dayJSON.getJSONObject("main")
                 val windDataObject = dayJSON.getJSONObject("wind")
-                val weatherData = Weather(
+                val weatherEntity = Weather(
                     mainDataObject.getDouble("temp"),
                     windDataObject.getDouble("speed"),
                     mainDataObject.getDouble("humidity")
                 )
 
                 val clothes = Clothes(clothing)
-                val perceivedTemp = weatherData.getTemperatureCelsiusPerception()
+                val perceivedTemp = weatherEntity.temperatureCelsiusPerception()
 
                 val weatherDataArray = dayJSON.getJSONArray("weather")
                 val iconName = weatherDataArray.getJSONObject(0).getString("icon")
 
                 handler.post {
-                    viewState.title(DataModel.title(weather.degree, weatherData))
-                    viewState.setTextInfo(weatherData)
+                    viewState.title(DataModel.title(weather.degree, weatherEntity))
+                    viewState.setTextInfo(weatherEntity)
                     viewState.loadModel(clothes.clothesId(perceivedTemp))
                     viewState.loadIcon(weatherApi.iconUri(iconName))
 

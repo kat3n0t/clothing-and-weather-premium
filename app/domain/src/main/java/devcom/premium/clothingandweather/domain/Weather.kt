@@ -1,22 +1,25 @@
-package devcom.premium.clothingandweather.common
+package devcom.premium.clothingandweather.domain
 
 import kotlin.math.pow
 import kotlin.math.round
 
-data class Weather(val temperatureCelsius: Double, val windSpeed: Double, val humidity: Double) {
+data class Weather(
+    val temperatureCelsius: Double, val windSpeed: Double, val humidity: Double
+) {
     /**
      * перевод температуры из градусов Цельсия в Фаренгейт
      */
-    val temperatureFahrenheit = temperatureCelsius * 1.8 + 32
+    val temperatureFahrenheit by lazy { temperatureCelsius * 1.8 + 32 }
+
     /**
      * перевод из м/ч в км/ч
      */
-    private val windSpeedKmHour = if (windSpeed != 0.0) windSpeed * 3.6 else windSpeed
+    private val windSpeedKmHour by lazy { if (windSpeed != 0.0) windSpeed * 3.6 else windSpeed }
 
     /**
      * @return температура по ощущениям в градусах Цельсия
      */
-    fun getTemperatureCelsiusPerception(): Double {
+    fun temperatureCelsiusPerception(): Double {
         var correctTemperature = temperatureCelsius
         if ((temperatureCelsius <= 10) && (windSpeedKmHour > 4.8)) {
             // ветро-холодовый индекс, согласно формуле
@@ -27,7 +30,7 @@ data class Weather(val temperatureCelsius: Double, val windSpeed: Double, val hu
                 windColdIndex -= 2
             correctTemperature = round(10 * windColdIndex) / 10
         }
-        correctTemperature += getCelsiusHeatLoad(temperatureCelsius, humidity)
+        correctTemperature += celsiusHeatLoad(temperatureCelsius, humidity)
         return correctTemperature
     }
 
@@ -37,7 +40,7 @@ data class Weather(val temperatureCelsius: Double, val windSpeed: Double, val hu
      * @param humidity влажность воздуха
      * @return сдвиг на градусы Цельсия в зависимости от тепловой нагрузки
      */
-    private fun getCelsiusHeatLoad(temperature: Double, humidity: Double): Double {
+    private fun celsiusHeatLoad(temperature: Double, humidity: Double): Double {
         var heatLoad = 0.0
         if (temperature >= 20) {
             if (humidity < 30)
