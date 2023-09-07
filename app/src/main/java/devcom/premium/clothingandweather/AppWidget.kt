@@ -15,14 +15,13 @@ import android.widget.RemoteViews
 import devcom.premium.clothingandweather.common.ConnectionStateMonitor
 import devcom.premium.clothingandweather.common.DataNotFoundException
 import devcom.premium.clothingandweather.common.IntExtensions
-import devcom.premium.clothingandweather.domain.WeatherType
+import devcom.premium.clothingandweather.data.DataModel
+import devcom.premium.clothingandweather.data.ModelRepository
+import devcom.premium.clothingandweather.data.rest.WeatherApi
 import devcom.premium.clothingandweather.data.storage.ConstStorage
 import devcom.premium.clothingandweather.data.storage.PreferencesStorage
-import devcom.premium.clothingandweather.data.DataModel
-import devcom.premium.clothingandweather.data.rest.WeatherApi
-import devcom.premium.clothingandweather.domain.Weather
+import devcom.premium.clothingandweather.domain.WeatherType
 import devcom.premium.clothingandweather.mvp.main.view.MainActivity
-import org.json.JSONObject
 import kotlin.concurrent.thread
 
 class AppWidget : AppWidgetProvider() {
@@ -64,7 +63,9 @@ class AppWidget : AppWidgetProvider() {
 
     companion object {
         var hasLoadedData: Boolean = false
-        private var handler: Handler = Handler(Looper.getMainLooper())
+
+        private val handler = Handler(Looper.getMainLooper())
+        private val repository = ModelRepository(WeatherApi())
 
         internal fun updateAppWidget(
             context: Context, appWidgetManager: AppWidgetManager,
@@ -84,25 +85,14 @@ class AppWidget : AppWidgetProvider() {
 
             thread {
                 try {
-                    val json: JSONObject = WeatherApi(city).data(WeatherType.FORECAST_TODAY)
-                        ?: throw DataNotFoundException(context)
-                    val dayJSON = DataModel.weatherDay(json, WeatherType.FORECAST_TODAY)
-                        ?: throw DataNotFoundException(context)
-
-                    val mainDataObject = dayJSON.getJSONObject("main")
-                    val windDataObject = dayJSON.getJSONObject("wind")
-
-                    val weather = Weather(
-                        mainDataObject.getDouble("temp"),
-                        windDataObject.getDouble("speed"),
-                        mainDataObject.getDouble("humidity")
-                    )
+                    val weather =
+                        repository.weatherData(WeatherType.FORECAST_TODAY, city)?.weather
+                            ?: throw DataNotFoundException(context)
 
                     handler.post {
                         val views = RemoteViews(context.packageName, R.layout.app_widget)
                         views.setTextViewText(
-                            R.id.appwidget_text_weather,
-                            DataModel.title(weatherDegree, weather)
+                            R.id.appwidget_text_weather, DataModel.title(weatherDegree, weather)
                         )
                         views.setTextViewText(R.id.appwidget_text_city, city)
                         views.setViewVisibility(R.id.appwidget_text_city, View.VISIBLE)

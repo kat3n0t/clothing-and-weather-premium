@@ -8,19 +8,16 @@ import devcom.premium.clothingandweather.common.Clothes
 import devcom.premium.clothingandweather.common.DataNotFoundException
 import devcom.premium.clothingandweather.data.ClothingConfig
 import devcom.premium.clothingandweather.data.DataModel
-import devcom.premium.clothingandweather.data.rest.WeatherApi
+import devcom.premium.clothingandweather.data.ModelRepository
 import devcom.premium.clothingandweather.data.WeatherConfig
-import devcom.premium.clothingandweather.domain.Weather
+import devcom.premium.clothingandweather.data.rest.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.IMainView
 import moxy.InjectViewState
 import moxy.MvpPresenter
-import org.json.JSONObject
 import kotlin.concurrent.thread
 
 @InjectViewState
 class MainPresenter : MvpPresenter<IMainView>() {
-
-    private var handler: Handler = Handler(Looper.getMainLooper())
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -36,13 +33,13 @@ class MainPresenter : MvpPresenter<IMainView>() {
      * Обрабатывает при обновлении соединения
      *
      * @param context [Context]
-     * @param clothing данные о модели персонажа
+     * @param clothingConfig данные о модели персонажа
      * @param
      */
     fun updateAPIConnection(
         context: Context,
-        clothing: ClothingConfig,
-        weather: WeatherConfig,
+        clothingConfig: ClothingConfig,
+        weatherConfig: WeatherConfig,
         city: String,
     ) {
         viewState.switchInfoVisibility(false)
@@ -52,34 +49,26 @@ class MainPresenter : MvpPresenter<IMainView>() {
         handler.removeCallbacksAndMessages(null)
         thread {
             try {
-                val weatherApi = WeatherApi(city)
-                val json: JSONObject = weatherApi.data(weather.type)
-                    ?: throw DataNotFoundException(context)
-                val dayJSON: JSONObject = DataModel.weatherDay(json, weather.type)
+                val weatherData = repository.weatherData(weatherConfig.type, city)
                     ?: throw DataNotFoundException(context)
 
-                val mainDataObject = dayJSON.getJSONObject("main")
-                val windDataObject = dayJSON.getJSONObject("wind")
-                val weatherEntity = Weather(
-                    mainDataObject.getDouble("temp"),
-                    windDataObject.getDouble("speed"),
-                    mainDataObject.getDouble("humidity")
-                )
+                val clothes = Clothes(clothingConfig)
 
-                val clothes = Clothes(clothing)
-                val perceivedTemp = weatherEntity.temperatureCelsiusPerception()
+                val weather = weatherData.weather
+                val iconUri = weatherData.iconUri
 
-                val weatherDataArray = dayJSON.getJSONArray("weather")
-                val iconName = weatherDataArray.getJSONObject(0).getString("icon")
+                val perceivedTemp = weather.temperatureCelsiusPerception()
 
                 handler.post {
-                    viewState.title(DataModel.title(weather.degree, weatherEntity))
-                    viewState.setTextInfo(weatherEntity)
-                    viewState.loadModel(clothes.clothesId(perceivedTemp))
-                    viewState.loadIcon(weatherApi.iconUri(iconName))
+                    with(viewState) {
+                        title(DataModel.title(weatherConfig.degree, weather))
+                        setTextInfo(weather)
+                        loadModel(clothes.clothesId(perceivedTemp))
+                        loadIcon(iconUri)
 
-                    viewState.switchLoadingVisibility(false)
-                    viewState.switchInfoVisibility(true)
+                        switchLoadingVisibility(false)
+                        switchInfoVisibility(true)
+                    }
                 }
             } catch (e: Exception) {
                 handler.post {
@@ -93,5 +82,10 @@ class MainPresenter : MvpPresenter<IMainView>() {
                 }
             }
         }
+    }
+
+    companion object {
+        private val handler = Handler(Looper.getMainLooper())
+        private val repository = ModelRepository(WeatherApi())
     }
 }
