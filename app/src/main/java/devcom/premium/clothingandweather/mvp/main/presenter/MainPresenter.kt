@@ -10,14 +10,13 @@ import devcom.premium.clothingandweather.data.ClothingConfig
 import devcom.premium.clothingandweather.data.DataModel
 import devcom.premium.clothingandweather.data.ModelRepository
 import devcom.premium.clothingandweather.data.WeatherConfig
-import devcom.premium.clothingandweather.data.rest.WeatherApi
 import devcom.premium.clothingandweather.mvp.main.view.IMainView
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import kotlin.concurrent.thread
 
 @InjectViewState
-class MainPresenter : MvpPresenter<IMainView>() {
+class MainPresenter(private val repository: ModelRepository) : MvpPresenter<IMainView>() {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -86,6 +85,5 @@ class MainPresenter : MvpPresenter<IMainView>() {
 
     companion object {
         private val handler = Handler(Looper.getMainLooper())
-        private val repository = ModelRepository(WeatherApi())
     }
 }

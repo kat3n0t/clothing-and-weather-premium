@@ -14,23 +14,28 @@ import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.SettingsActivity
 import devcom.premium.clothingandweather.common.ConnectionStateMonitor
-import devcom.premium.clothingandweather.domain.Gender
 import devcom.premium.clothingandweather.common.IntExtensions
-import devcom.premium.clothingandweather.data.storage.ConstStorage
-import devcom.premium.clothingandweather.data.storage.PreferencesStorage
 import devcom.premium.clothingandweather.data.ClothingConfig
 import devcom.premium.clothingandweather.data.DataModel
 import devcom.premium.clothingandweather.data.WeatherConfig
+import devcom.premium.clothingandweather.data.storage.ConstStorage
+import devcom.premium.clothingandweather.data.storage.PreferencesStorage
 import devcom.premium.clothingandweather.databinding.ActivityMainBinding
+import devcom.premium.clothingandweather.domain.Gender
 import devcom.premium.clothingandweather.domain.Weather
 import devcom.premium.clothingandweather.mvp.ABaseMvpActivity
 import devcom.premium.clothingandweather.mvp.main.presenter.MainPresenter
 import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
+import org.koin.android.ext.android.get
 
 class MainActivity : ABaseMvpActivity(), IMainView {
 
     @InjectPresenter
     internal lateinit var presenter: MainPresenter
+
+    @ProvidePresenter
+    fun providePresenter(): MainPresenter = get()
 
     private lateinit var storage: PreferencesStorage
 
