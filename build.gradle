@@ -27,7 +27,7 @@ task clean(type: Delete) {
 }
 
 project.ext {
-    def sdkVersion = 31
+    def sdkVersion = 34
 
     compileSdkVersion = sdkVersion
     targetSdkVersion = sdkVersion
