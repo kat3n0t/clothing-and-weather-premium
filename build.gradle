@@ -2,7 +2,7 @@ buildscript {
     ext {
         kotlinVersion = '1.8.0'
         moxyVersion = '2.2.2'
-        androidxCoreVersion = "1.6.0"
+        androidxCoreVersion = "1.12.0"
         androidxPreferencesVersion = "1.2.1"
     }
     repositories {

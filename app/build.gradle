@@ -38,8 +38,7 @@ dependencies {
 
     compileOnly "androidx.core:core-ktx:$androidxCoreVersion"
     compileOnly "androidx.preference:preference-ktx:$androidxPreferencesVersion"
-    implementation "androidx.constraintlayout:constraintlayout:2.1.0"
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation "com.github.bumptech.glide:glide:4.12.0"
 
     kapt "com.github.moxy-community:moxy-compiler:$moxyVersion"
