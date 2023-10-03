@@ -5,6 +5,7 @@
     <string name="clothing">Kläder</string>
     <string name="cur_city">Nuvarande stad:</string>
     <string name="degree">Temperaturenhet</string>
+    <string name="gender">Kön</string>
     <string name="humidity">Fuktighet</string>
     <string name="loading">Lastning…</string>
     <string name="location">Plats</string>
@@ -13,11 +14,11 @@
     <string name="refresh">Uppdatera</string>
     <string name="save">Spara</string>
     <string name="settings">Inställningar</string>
-    <string name="gender">Kön</string>
     <string name="style">Stil</string>
     <string name="waiting_for_network">Väntar på nätverk&#8230;</string>
+    <string name="weather">Väder</string>
     <string name="weather_data_not_found">Väderinformation hittades inte</string>
     <string name="weather_for_date">Väder för</string>
-    <string name="weather">Väder</string>
+    <string name="widget_description">Kolla väderprognosen för idag!</string>
     <string name="wind">Vind</string>
 </resources>
