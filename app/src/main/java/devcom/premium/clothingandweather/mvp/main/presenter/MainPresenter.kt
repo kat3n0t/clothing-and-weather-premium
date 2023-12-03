@@ -46,12 +46,11 @@ class MainPresenter(private val repository: ModelRepository) : MvpPresenter<IMai
         viewState.title(context.getString(R.string.loading))
 
         handler.removeCallbacksAndMessages(null)
+        val clothes = Clothes(clothingConfig)
         thread {
             try {
                 val weatherData = repository.weatherData(weatherConfig.type, city)
                     ?: throw DataNotFoundException(context)
-
-                val clothes = Clothes(clothingConfig)
 
                 val weather = weatherData.weather
                 val iconUri = weatherData.iconUri
@@ -76,8 +75,11 @@ class MainPresenter(private val repository: ModelRepository) : MvpPresenter<IMai
                             viewState.title(it)
                         }
                     }
-                    viewState.switchLoadingVisibility(false)
-                    viewState.switchInfoVisibility(false)
+                    with(viewState) {
+                        loadModel(clothes.clothesId(Clothes.INVALID_TEMPERATURE))
+                        switchLoadingVisibility(false)
+                        switchInfoVisibility(false)
+                    }
                 }
             }
         }

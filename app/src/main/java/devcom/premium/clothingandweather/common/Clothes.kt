@@ -70,6 +70,8 @@ class Clothes(private val clothing: ClothingConfig) {
     }
 
     companion object {
+        internal const val INVALID_TEMPERATURE = 1000.0
+
         private val range100n25n = -100.0..-25.0
         private val range100n5n = -100.0..-5.0
         private val range25n5n = -25.0..-5.0
