@@ -1,9 +1,13 @@
-﻿*.iml
-.gradle
-/local.properties
-/.idea/
+﻿# Directories
+.gradle/
+.idea/
+build/
+captures/
+
+#Files
 .DS_Store
-app/build
-/build
-/captures
 .externalNativeBuild
+local.properties
+
+#Extensions
+*.iml

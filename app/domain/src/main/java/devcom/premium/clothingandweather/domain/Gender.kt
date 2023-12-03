@@ -1,4 +1,4 @@
-package devcom.premium.clothingandweather.common
+package devcom.premium.clothingandweather.domain
 
 /**
  * Пол модели персонажа

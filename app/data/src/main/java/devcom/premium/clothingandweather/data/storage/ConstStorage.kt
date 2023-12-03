@@ -1,4 +1,4 @@
-package devcom.premium.clothingandweather.common.storage
+package devcom.premium.clothingandweather.data.storage
 
 /**
  * Константы для работы с пользовательскими данными

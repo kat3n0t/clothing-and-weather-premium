@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="refresh">Обновить</string>
+    <string name="city">Город</string>
+    <string name="city_hint">Введите город</string>
+    <string name="clothing">Одежда</string>
+    <string name="cur_city">Текущий город:</string>
+    <string name="degree">Единица измерения температуры</string>
+    <string name="gender">Пол</string>
+    <string name="humidity">Влажность</string>
     <string name="loading">Загрузка&#8230;</string>
+    <string name="location">Местоположение</string>
+    <string name="meter_sec">м/сек</string>
+    <string name="preferences">Настройки</string>
+    <string name="refresh">Обновить</string>
+    <string name="save">Сохранить</string>
     <string name="settings">Настройки</string>
     <string name="style">Стиль</string>
+    <string name="waiting_for_network">Ожидание сети&#8230;</string>
+    <string name="weather">Погода</string>
+    <string name="weather_data_not_found">Данные о погоде не найдены</string>
+    <string name="weather_for_date">Погода на</string>
+    <string name="widget_description">Смотри сегодняшнюю погоду!</string>
+    <string name="wind">Ветер</string>
+
     <string-array name="list_styles">
         <item>Повседневный</item>
         <item>Официальный</item>
         <item>Спортивный</item>
     </string-array>
-    <string name="gender">Пол</string>
     <string-array name="list_gender">
         <item>Мужской</item>
         <item>Женский</item>
@@ -19,24 +36,9 @@
         <item>Цельсий</item>
         <item>Фаренгейт</item>
     </string-array>
-    <string name="city">Город</string>
-    <string name="location">Местоположение</string>
-    <string name="preferences">Настройки</string>
-    <string name="save">Сохранить</string>
-    <string name="cur_city">Текущий город:</string>
-    <string name="weather_data_not_found">Данные о погоде не найдены</string>
-    <string name="city_hint">Введите город</string>
-    <string name="wind">Ветер</string>
-    <string name="meter_sec">м/сек</string>
-    <string name="humidity">Влажность</string>
-    <string name="weather_for_date">Погода на</string>
     <string-array name="list_weather_for_date">
         <item>Данный момент</item>
         <item>Сегодня</item>
         <item>Завтра</item>
     </string-array>
-    <string name="waiting_for_network">Ожидание сети&#8230;</string>
-    <string name="degree">Единица измерения температуры</string>
-    <string name="weather">Погода</string>
-    <string name="clothing">Одежда</string>
 </resources>

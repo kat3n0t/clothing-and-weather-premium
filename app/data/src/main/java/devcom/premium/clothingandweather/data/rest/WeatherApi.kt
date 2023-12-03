@@ -1,7 +1,7 @@
-package devcom.premium.clothingandweather.data
+package devcom.premium.clothingandweather.data.rest
 
 import android.net.Uri
-import devcom.premium.clothingandweather.common.WeatherType
+import devcom.premium.clothingandweather.domain.WeatherType
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -11,7 +11,7 @@ import java.net.URL
 /**
  * Вспомогательный класс для работы с API openweathermap.org
  */
-class WeatherApi(private val city: String) {
+class WeatherApi {
 
     /**
      * Возвращает ссылку на иконку по идентификатору
@@ -27,8 +27,8 @@ class WeatherApi(private val city: String) {
      * @param type тип погоды
      * @return [JSONObject]
      */
-    fun data(type: WeatherType): JSONObject? {
-        val url = dataUrl(type)
+    fun data(type: WeatherType, city: String): JSONObject? {
+        val url = dataUrl(type, city)
         return jsonObject(url)
     }
 
@@ -38,7 +38,7 @@ class WeatherApi(private val city: String) {
      * @param type тип погоды
      * @return [URL]
      */
-    private fun dataUrl(type: WeatherType): URL {
+    private fun dataUrl(type: WeatherType, city: String): URL {
         val linkPart = if (type == WeatherType.WEATHER) OWM_TYPE_WEATHER else OWM_TYPE_FORECAST
         return URL("$OWM_LINK$OWN_DATA$linkPart?q=$city&units=metric&APPID=$OWM_APP_ID")
     }

@@ -3,14 +3,14 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion sdkVersion
-    buildToolsVersion '30.0.3'
+    compileSdk rootProject.ext.compileSdkVersion
+
     defaultConfig {
         applicationId "devcom.premium.clothingandweather"
-        minSdkVersion 21
-        targetSdkVersion sdkVersion
-        versionCode 18
-        versionName "1.6"
+        minSdk rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 19
+        versionName "1.7"
     }
     buildTypes {
         release {
@@ -32,12 +32,17 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.core:core-ktx:1.6.0"
-    implementation "androidx.constraintlayout:constraintlayout:2.1.0"
-    implementation 'androidx.preference:preference-ktx:1.1.1'
-    implementation 'com.google.android.material:material:1.4.0'
+
+    compileOnly project(":app:domain")
+    implementation project(":app:data")
+
+    compileOnly "androidx.core:core-ktx:$androidxCoreVersion"
+    compileOnly "androidx.preference:preference-ktx:$androidxPreferencesVersion"
+    implementation 'com.google.android.material:material:1.9.0'
     implementation "com.github.bumptech.glide:glide:4.12.0"
 
     kapt "com.github.moxy-community:moxy-compiler:$moxyVersion"
     implementation "com.github.moxy-community:moxy-app-compat:$moxyVersion"
+
+    implementation "io.insert-koin:koin-android:3.4.3"
 }

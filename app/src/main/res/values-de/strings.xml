@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="city">Stadt</string>
+    <string name="city_hint">Geben Sie die Stadt ein</string>
+    <string name="clothing">Kleidung</string>
+    <string name="cur_city">Aktuelle Stadt:</string>
+    <string name="degree">Temperatureinheit</string>
+    <string name="gender">Geschlecht</string>
+    <string name="humidity">Feuchtigkeit</string>
+    <string name="loading">Laden&#8230;</string>
+    <string name="location">Standort</string>
+    <string name="meter_sec">m/s</string>
+    <string name="preferences">Einstellungen</string>
+    <string name="refresh">Aktualisierung</string>
+    <string name="save">Speichern</string>
+    <string name="settings">Einstellungen</string>
+    <string name="style">Stil</string>
+    <string name="waiting_for_network">Auf Verbindung warten&#8230;</string>
+    <string name="weather">Wetter</string>
+    <string name="weather_data_not_found">Keine Wetterdaten gefunden</string>
+    <string name="weather_for_date">Wetter für</string>
+    <string name="widget_description">Überprüfen Sie die heutige Wettervorhersage!</string>
+    <string name="wind">Wind</string>
+
+    <string-array name="list_gender">
+        <item>Männlich</item>
+        <item>Weiblich</item>
+    </string-array>
+    <string-array name="list_styles">
+        <item>Lässiger</item>
+        <item>Formeller</item>
+        <item>Sport</item>
+    </string-array>
+    <string-array name="list_weather_for_date">
+        <item>Jetzt</item>
+        <item>Heute</item>
+        <item>Morgen</item>
+    </string-array>
+</resources>

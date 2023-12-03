@@ -1,25 +1,29 @@
 <resources>
     <string name="app_name" translatable="false">Clothing and Weather</string>
-    <string name="clothing">Clothing</string>
-    <string name="weather">Weather</string>
-
-    <string name="loading">Loading&#8230;</string>
-    <string name="waiting_for_network">Waiting for network&#8230;</string>
-    <string name="refresh">Refresh</string>
-    <string name="settings">Settings</string>
-    <string name="wind">Wind</string>
-    <string name="meter_sec">m/sec</string>
-    <string name="humidity">Humidity</string>
-
     <string name="icon" translatable="false">Icon</string>
 
-    <!-- Error -->
-
-    <!-- Strings related to Settings -->
-
-    <string name="preferences">Preferences</string>
-
+    <string name="city">City</string>
+    <string name="city_hint">Enter the city</string>
+    <string name="clothing">Clothing</string>
+    <string name="cur_city">Current city:</string>
+    <string name="degree">Degree</string>
     <string name="gender">Gender</string>
+    <string name="humidity">Humidity</string>
+    <string name="loading">Loading&#8230;</string>
+    <string name="location">Location</string>
+    <string name="meter_sec">m/sec</string>
+    <string name="preferences">Preferences</string>
+    <string name="refresh">Refresh</string>
+    <string name="save">Save</string>
+    <string name="settings">Settings</string>
+    <string name="style">Style</string>
+    <string name="waiting_for_network">Waiting for network&#8230;</string>
+    <string name="weather">Weather</string>
+    <string name="weather_data_not_found">Weather data not found</string>
+    <string name="weather_for_date">Weather for</string>
+    <string name="widget_description">Check today\'s weather!</string>
+    <string name="wind">Wind</string>
+
     <string-array name="list_gender">
         <item>Man</item>
         <item>Woman</item>
@@ -29,7 +33,6 @@
         <item>1</item>
     </string-array>
 
-    <string name="style">Style</string>
     <string-array name="list_styles">
         <item>Casual</item>
         <item>Official</item>
@@ -41,7 +44,6 @@
         <item>2</item>
     </string-array>
 
-    <string name="weather_for_date">Weather for</string>
     <string-array name="list_weather_for_date">
         <item>Now</item>
         <item>Today</item>
@@ -53,7 +55,6 @@
         <item>2</item>
     </string-array>
 
-    <string name="degree">Degree</string>
     <string-array name="list_degree">
         <item>Celsius / Fahrenheit</item>
         <item>Celsius</item>
@@ -64,15 +65,4 @@
         <item>1</item>
         <item>2</item>
     </string-array>
-
-    <!-- Strings related to Location -->
-
-    <string name="location">Location</string>
-
-    <string name="city">City</string>
-    <string name="cur_city">Current city:</string>
-    <string name="city_hint">Enter the city</string>
-    <string name="weather_data_not_found">Weather data not found</string>
-    <string name="save">Save</string>
-
 </resources>

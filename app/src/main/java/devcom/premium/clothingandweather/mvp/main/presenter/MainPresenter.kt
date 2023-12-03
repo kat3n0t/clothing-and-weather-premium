@@ -3,23 +3,20 @@ package devcom.premium.clothingandweather.mvp.main.presenter
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
-import devcom.premium.clothingandweather.SettingsActivity
-import devcom.premium.clothingandweather.common.*
+import devcom.premium.clothingandweather.common.Clothes
+import devcom.premium.clothingandweather.common.DataNotFoundException
 import devcom.premium.clothingandweather.data.ClothingConfig
-import devcom.premium.clothingandweather.data.WeatherApi
+import devcom.premium.clothingandweather.data.DataModel
+import devcom.premium.clothingandweather.data.ModelRepository
 import devcom.premium.clothingandweather.data.WeatherConfig
 import devcom.premium.clothingandweather.mvp.main.view.IMainView
-import devcom.premium.clothingandweather.data.DataModel
 import moxy.InjectViewState
 import moxy.MvpPresenter
-import org.json.JSONObject
+import kotlin.concurrent.thread
 
 @InjectViewState
-class MainPresenter : MvpPresenter<IMainView>() {
-
-    private var handler: Handler = Handler(Looper.getMainLooper())
+class MainPresenter(private val repository: ModelRepository) : MvpPresenter<IMainView>() {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -35,13 +32,13 @@ class MainPresenter : MvpPresenter<IMainView>() {
      * Обрабатывает при обновлении соединения
      *
      * @param context [Context]
-     * @param clothing данные о модели персонажа
+     * @param clothingConfig данные о модели персонажа
      * @param
      */
     fun updateAPIConnection(
         context: Context,
-        clothing: ClothingConfig,
-        weather: WeatherConfig,
+        clothingConfig: ClothingConfig,
+        weatherConfig: WeatherConfig,
         city: String,
     ) {
         viewState.switchInfoVisibility(false)
@@ -49,50 +46,46 @@ class MainPresenter : MvpPresenter<IMainView>() {
         viewState.title(context.getString(R.string.loading))
 
         handler.removeCallbacksAndMessages(null)
-        object : Thread() {
-            override fun run() {
-                try {
-                    val weatherApi = WeatherApi(city)
-                    val json: JSONObject = weatherApi.data(weather.type)
-                        ?: throw DataNotFoundException(context)
-                    val dayJSON: JSONObject = DataModel.weatherDay(json, weather.type)
-                        ?: throw DataNotFoundException(context)
+        val clothes = Clothes(clothingConfig)
+        thread {
+            try {
+                val weatherData = repository.weatherData(weatherConfig.type, city)
+                    ?: throw DataNotFoundException(context)
 
-                    val mainDataObject = dayJSON.getJSONObject("main")
-                    val windDataObject = dayJSON.getJSONObject("wind")
-                    val weatherData = Weather(
-                        mainDataObject.getDouble("temp"),
-                        windDataObject.getDouble("speed"),
-                        mainDataObject.getDouble("humidity")
-                    )
+                val weather = weatherData.weather
+                val iconUri = weatherData.iconUri
 
-                    val clothes = Clothes(clothing)
-                    val perceivedTemp = weatherData.getTemperatureCelsiusPerception()
+                val perceivedTemp = weather.temperatureCelsiusPerception()
 
-                    val weatherDataArray = dayJSON.getJSONArray("weather")
-                    val iconName = weatherDataArray.getJSONObject(0).getString("icon")
+                handler.post {
+                    with(viewState) {
+                        title(DataModel.title(weatherConfig.degree, weather))
+                        setTextInfo(weather)
+                        loadModel(clothes.clothesId(perceivedTemp))
+                        loadIcon(iconUri)
 
-                    handler.post {
-                        viewState.title(DataModel.title(weather.degree, weatherData))
-                        viewState.setTextInfo(weatherData)
-                        viewState.loadModel(clothes.clothesId(perceivedTemp))
-                        viewState.loadIcon(weatherApi.iconUri(iconName))
-
-                        viewState.switchLoadingVisibility(false)
-                        viewState.switchInfoVisibility(true)
+                        switchLoadingVisibility(false)
+                        switchInfoVisibility(true)
                     }
-                } catch (e: Exception) {
-                    handler.post {
-                        e.message?.let {
-                            if (e is DataNotFoundException) {
-                                viewState.title(it)
-                            }
+                }
+            } catch (e: Exception) {
+                handler.post {
+                    e.message?.let {
+                        if (e is DataNotFoundException) {
+                            viewState.title(it)
                         }
-                        viewState.switchLoadingVisibility(false)
-                        viewState.switchInfoVisibility(false)
+                    }
+                    with(viewState) {
+                        loadModel(clothes.clothesId(Clothes.INVALID_TEMPERATURE))
+                        switchLoadingVisibility(false)
+                        switchInfoVisibility(false)
                     }
                 }
             }
-        }.start()
+        }
+    }
+
+    companion object {
+        private val handler = Handler(Looper.getMainLooper())
     }
 }

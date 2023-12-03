@@ -2,7 +2,7 @@ package devcom.premium.clothingandweather.mvp.main.view
 
 import android.net.Uri
 import androidx.annotation.DrawableRes
-import devcom.premium.clothingandweather.common.Weather
+import devcom.premium.clothingandweather.domain.Weather
 import moxy.MvpView
 import moxy.viewstate.strategy.SkipStrategy
 import moxy.viewstate.strategy.StateStrategyType

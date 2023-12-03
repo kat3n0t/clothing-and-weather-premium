@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import devcom.premium.clothingandweather.common.storage.ConstStorage
-import devcom.premium.clothingandweather.common.storage.PreferencesStorage
+import devcom.premium.clothingandweather.data.storage.ConstStorage
+import devcom.premium.clothingandweather.data.storage.PreferencesStorage
 import devcom.premium.clothingandweather.databinding.ActivityLocationBinding
 import java.util.Locale
 
@@ -13,6 +13,7 @@ class LocationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLocationBinding
 
+    // todo: перенести хранилище в презентер, прокинуть через репозиторий
     private lateinit var storage: PreferencesStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +47,7 @@ class LocationActivity : AppCompatActivity() {
      * Отображает текущий город
      */
     private fun showCurrentCity() {
-        val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
+        val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)
         binding.tvActiveCity.text = city
     }
 
@@ -75,6 +76,6 @@ class LocationActivity : AppCompatActivity() {
             return text
         }
 
-        return text.substring(0, 1).toUpperCase(Locale.ROOT) + text.substring(1)
+        return text.substring(0, 1).uppercase(Locale.ROOT) + text.substring(1)
     }
 }

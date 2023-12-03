@@ -1,7 +1,7 @@
 package devcom.premium.clothingandweather.data
 
-import devcom.premium.clothingandweather.common.Gender
-import devcom.premium.clothingandweather.common.Style
+import devcom.premium.clothingandweather.domain.Gender
+import devcom.premium.clothingandweather.domain.Style
 
 /**
  * Класс данных конфигурации модели персонажа
