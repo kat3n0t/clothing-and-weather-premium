@@ -47,7 +47,7 @@ class LocationActivity : AppCompatActivity() {
      * Отображает текущий город
      */
     private fun showCurrentCity() {
-        val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
+        val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)
         binding.tvActiveCity.text = city
     }
 

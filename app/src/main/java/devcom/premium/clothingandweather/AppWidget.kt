@@ -2,7 +2,6 @@ package devcom.premium.clothingandweather
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
-import android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
@@ -12,85 +11,83 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.RemoteViews
-import devcom.premium.clothingandweather.common.ConnectionStateMonitor
 import devcom.premium.clothingandweather.common.DataNotFoundException
-import devcom.premium.clothingandweather.common.IntExtensions
 import devcom.premium.clothingandweather.data.DataModel
 import devcom.premium.clothingandweather.data.ModelRepository
-import devcom.premium.clothingandweather.data.rest.WeatherApi
 import devcom.premium.clothingandweather.data.storage.ConstStorage
 import devcom.premium.clothingandweather.data.storage.PreferencesStorage
+import devcom.premium.clothingandweather.domain.Degree
 import devcom.premium.clothingandweather.domain.WeatherType
 import devcom.premium.clothingandweather.mvp.main.view.MainActivity
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.concurrent.thread
 
-class AppWidget : AppWidgetProvider() {
+class AppWidget : AppWidgetProvider(), KoinComponent {
+
+    private val repository: ModelRepository by inject()
 
     override fun onUpdate(
-        context: Context,
-        appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray
+        context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray
     ) {
         for (appWidgetId in appWidgetIds)
-            updateAppWidget(context, appWidgetManager, appWidgetId)
+            updateAppWidget(repository, context, appWidgetManager, appWidgetId)
     }
 
     override fun onAppWidgetOptionsChanged(
-        context: Context?,
-        appWidgetManager: AppWidgetManager,
-        appWidgetId: Int,
-        newOptions: Bundle?
+        context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, newOptions: Bundle?
     ) {
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
-        if (newOptions != null) {
-            val views = RemoteViews(context?.packageName, R.layout.app_widget)
-            if ((newOptions.getInt(OPTION_APPWIDGET_MIN_WIDTH) > 250) and (hasLoadedData)) {
-                views.setViewVisibility(R.id.widget_layout_weather_data, View.VISIBLE)
-                views.setViewVisibility(R.id.widget_layout_line, View.VISIBLE)
-                views.setViewVisibility(R.id.appwidget_text_speed, View.VISIBLE)
-                views.setViewVisibility(R.id.appwidget_text_humidity, View.VISIBLE)
+
+        val newWidth = newOptions?.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH) ?: return
+        RemoteViews(context.packageName, R.layout.app_widget).apply {
+            if ((newWidth > MIN_WIDTH_EXTENDED_WIDGET) and (hasLoadedData)) {
+                setViewVisibility(R.id.widget_layout_weather_data, View.VISIBLE)
+                setViewVisibility(R.id.widget_layout_line, View.VISIBLE)
+                setViewVisibility(R.id.appwidget_text_speed, View.VISIBLE)
+                setViewVisibility(R.id.appwidget_text_humidity, View.VISIBLE)
             } else {
-                if (hasLoadedData) views.setViewVisibility(R.id.appwidget_text_city, View.VISIBLE)
-                else views.setViewVisibility(R.id.appwidget_text_city, View.GONE)
-                views.setViewVisibility(R.id.widget_layout_weather_data, View.GONE)
-                views.setViewVisibility(R.id.widget_layout_line, View.GONE)
-                views.setViewVisibility(R.id.appwidget_text_speed, View.GONE)
-                views.setViewVisibility(R.id.appwidget_text_humidity, View.GONE)
+                if (hasLoadedData) setViewVisibility(R.id.appwidget_text_city, View.VISIBLE)
+                else setViewVisibility(R.id.appwidget_text_city, View.GONE)
+                setViewVisibility(R.id.widget_layout_weather_data, View.GONE)
+                setViewVisibility(R.id.widget_layout_line, View.GONE)
+                setViewVisibility(R.id.appwidget_text_speed, View.GONE)
+                setViewVisibility(R.id.appwidget_text_humidity, View.GONE)
             }
-            appWidgetManager.updateAppWidget(appWidgetId, views)
+        }.also {
+            appWidgetManager.updateAppWidget(appWidgetId, it)
         }
     }
 
     companion object {
-        var hasLoadedData: Boolean = false
+        private const val REQUEST_CODE = 0
+        private const val MIN_WIDTH_EXTENDED_WIDGET = 250
 
         private val handler = Handler(Looper.getMainLooper())
-        private val repository = ModelRepository(WeatherApi())
 
-        internal fun updateAppWidget(
-            context: Context, appWidgetManager: AppWidgetManager,
+        private var hasLoadedData: Boolean = false
+
+        private fun updateAppWidget(
+            repository: ModelRepository,
+            context: Context,
+            appWidgetManager: AppWidgetManager,
             appWidgetId: Int,
         ) {
-            val connectionStateMonitor = ConnectionStateMonitor(context)
-            if (!connectionStateMonitor.networkAvailable()) {
-                return
-            }
-
             val storage = PreferencesStorage(context)
-            val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)!!
+            val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)
 
-            val weatherDegreePref =
-                storage.value(ConstStorage.TITLE_DEGREE, ConstStorage.DEFAULT_VALUE)!!.toInt()
-            val weatherDegree = IntExtensions.toDegree(weatherDegreePref) ?: return
+            val weatherDegreePref = storage
+                .value(ConstStorage.TITLE_DEGREE, ConstStorage.DEFAULT_VALUE).toInt()
+            val weatherDegree = Degree.values().firstOrNull { it.ordinal == weatherDegreePref }
+                ?: return
 
+            val views = RemoteViews(context.packageName, R.layout.app_widget)
             thread {
                 try {
-                    val weather =
-                        repository.weatherData(WeatherType.FORECAST_TODAY, city)?.weather
-                            ?: throw DataNotFoundException(context)
+                    val weather = repository.weatherData(WeatherType.FORECAST_TODAY, city)?.weather
+                        ?: throw DataNotFoundException(context)
 
                     handler.post {
-                        val views = RemoteViews(context.packageName, R.layout.app_widget)
                         views.setTextViewText(
                             R.id.appwidget_text_weather, DataModel.title(weatherDegree, weather)
                         )
@@ -106,11 +103,12 @@ class AppWidget : AppWidgetProvider() {
                         )
 
                         val bundle = appWidgetManager.getAppWidgetOptions(appWidgetId)
-                        val visibility = if (bundle.getInt(OPTION_APPWIDGET_MIN_WIDTH) > 250) {
-                            View.VISIBLE
-                        } else {
-                            View.GONE
-                        }
+                        val visibility =
+                            if (bundle.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH) > MIN_WIDTH_EXTENDED_WIDGET) {
+                                View.VISIBLE
+                            } else {
+                                View.GONE
+                            }
                         views.setViewVisibility(R.id.widget_layout_weather_data, visibility)
                         views.setViewVisibility(R.id.widget_layout_line, visibility)
                         views.setViewVisibility(R.id.appwidget_text_speed, visibility)
@@ -118,18 +116,35 @@ class AppWidget : AppWidgetProvider() {
 
                         // переход на главную страницу приложения по клику
                         val pendingIntent = PendingIntent.getActivity(
-                            context, 0, Intent(context, MainActivity::class.java),
+                            context, REQUEST_CODE, Intent(context, MainActivity::class.java),
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                                PendingIntent.FLAG_IMMUTABLE
-                            else 0
+                                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                            else
+                                PendingIntent.FLAG_UPDATE_CURRENT
                         )
-                        views.setOnClickPendingIntent(R.id.layout_widget, pendingIntent)
-
+                        views.setOnClickPendingIntent(android.R.id.background, pendingIntent)
                         appWidgetManager.updateAppWidget(appWidgetId, views)
                         hasLoadedData = true
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
+
+                    views.apply {
+                        setOnClickPendingIntent(
+                            android.R.id.background, PendingIntent.getBroadcast(
+                                context, REQUEST_CODE,
+                                Intent(context, AppWidget::class.java).apply {
+                                    action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                                    putExtra(
+                                        AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(appWidgetId)
+                                    )
+                                },
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                                else PendingIntent.FLAG_UPDATE_CURRENT
+                            )
+                        )
+                    }
+                    appWidgetManager.updateAppWidget(appWidgetId, views)
                 }
             }
         }

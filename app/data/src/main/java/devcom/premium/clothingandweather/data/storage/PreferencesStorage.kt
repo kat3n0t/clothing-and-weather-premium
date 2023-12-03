@@ -17,8 +17,8 @@ class PreferencesStorage(context: Context) {
      * @param key ключ
      * @param defaultValue значение по умолчанию
      */
-    fun value(key: String, defaultValue: String?) =
-        sharedPreferences.getString(key, defaultValue)
+    fun value(key: String, defaultValue: String): String =
+        sharedPreferences.getString(key, defaultValue) ?: defaultValue
 
     /**
      * Сохраняет строковое значение
