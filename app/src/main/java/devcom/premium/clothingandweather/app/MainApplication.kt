@@ -2,6 +2,7 @@ package devcom.premium.clothingandweather.app
 
 import android.app.Application
 import devcom.premium.clothingandweather.di.appModule
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
 class MainApplication : Application() {
@@ -9,6 +10,7 @@ class MainApplication : Application() {
         super.onCreate()
 
         startKoin {
+            androidContext(this@MainApplication)
             modules(appModule)
         }
     }
