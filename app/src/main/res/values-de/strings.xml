@@ -12,6 +12,7 @@
     <string name="meter_sec">m/s</string>
     <string name="preferences">Einstellungen</string>
     <string name="refresh">Aktualisierung</string>
+    <string name="remove_location">Diese Standort entfernen?</string>
     <string name="save">Speichern</string>
     <string name="settings">Einstellungen</string>
     <string name="style">Stil</string>

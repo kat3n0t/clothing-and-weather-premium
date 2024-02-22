@@ -5,41 +5,71 @@ import devcom.premium.clothingandweather.data.storage.PreferencesStorage
 import devcom.premium.clothingandweather.mvp.location.view.ILocationView
 import moxy.InjectViewState
 import moxy.MvpPresenter
-import java.util.*
 
 @InjectViewState
 class LocationPresenter(private val storage: PreferencesStorage) : MvpPresenter<ILocationView>() {
 
+    private var currentLocation: String? = null
+
+    private val locationsList
+        get() = storage.value(ConstStorage.TITLE_PREV_LOCATIONS)
+
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        viewState.showCity(storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY))
+
+        currentLocation = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY).also {
+            viewState.showCurrentLocation(it)
+        }
+        viewState.showPreviousLocations(locationsList)
     }
 
     /**
      * Обрабатывает нажатие на кнопку сохранения
      */
-    fun onSaveLocation(city: String) {
-        val trimmedCity = city.trim()
-        if (trimmedCity.isBlank()) {
+    fun onSaveLocation(location: String) {
+        if (location.isBlank()) {
             viewState.switchCityValidationInfoVisibility(true)
             return
         }
 
         viewState.switchCityValidationInfoVisibility(false)
-        trimmedCity.transformFirstCharToUpperCase().also {
+
+        val validLocation = location.trim().replaceFirstChar(Char::titlecase)
+
+        val previousLocationsList = locationsList
+        currentLocation?.let {
+            if (it == validLocation || previousLocationsList.contains(it))
+                return@let
+
+            previousLocationsList.toMutableList()
+                .addNewElementWithLimit(it)
+                .also { changedList ->
+                    storage.putStringList(ConstStorage.TITLE_PREV_LOCATIONS, changedList)
+                    viewState.showPreviousLocations(changedList)
+                }
+        }
+
+        currentLocation = validLocation.also {
             storage.putString(ConstStorage.TITLE_CITY, it)
-            viewState.showCity(it)
+            viewState.showCurrentLocation(it)
         }
     }
 
-    /**
-     * Делает первую букву текста заглавной
-     */
-    private fun String.transformFirstCharToUpperCase(): String {
-        if (isBlank()) {
+    fun onRemoveLocation(location: String) = locationsList.toMutableList().let { list ->
+        list.removeAll { it == location }
+
+        storage.putStringList(ConstStorage.TITLE_PREV_LOCATIONS, list)
+        viewState.showPreviousLocations(list)
+    }
+
+    companion object {
+        private const val PREVIOUS_LOCATIONS_MAX_COUNT = 3
+
+        private fun <E, T : MutableList<E>> T.addNewElementWithLimit(element: E): T {
+            add(0, element)
+            if (size > PREVIOUS_LOCATIONS_MAX_COUNT)
+                removeLastOrNull()
             return this
         }
-
-        return substring(0, 1).uppercase(Locale.ROOT) + substring(1)
     }
 }
