@@ -11,11 +11,6 @@ import moxy.viewstate.strategy.StateStrategyType
 interface IMainView : MvpView {
 
     /**
-     * Отображает стандартную модель персонажа
-     */
-    fun showDefaultModel()
-
-    /**
      * Переключает видимость информации
      *
      * @param canVisible истина, если нужно отобразить инфу

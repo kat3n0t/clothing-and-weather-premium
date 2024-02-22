@@ -10,18 +10,14 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.DrawableRes
 import com.bumptech.glide.Glide
-import devcom.premium.clothingandweather.LocationActivity
 import devcom.premium.clothingandweather.R
 import devcom.premium.clothingandweather.SettingsActivity
 import devcom.premium.clothingandweather.common.ConnectionStateMonitor
-import devcom.premium.clothingandweather.data.ClothingConfig
 import devcom.premium.clothingandweather.data.DataModel
-import devcom.premium.clothingandweather.data.WeatherConfig
-import devcom.premium.clothingandweather.data.storage.ConstStorage
-import devcom.premium.clothingandweather.data.storage.PreferencesStorage
 import devcom.premium.clothingandweather.databinding.ActivityMainBinding
-import devcom.premium.clothingandweather.domain.*
+import devcom.premium.clothingandweather.domain.Weather
 import devcom.premium.clothingandweather.mvp.ABaseMvpActivity
+import devcom.premium.clothingandweather.mvp.location.view.LocationActivity
 import devcom.premium.clothingandweather.mvp.main.presenter.MainPresenter
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
@@ -34,8 +30,6 @@ class MainActivity : ABaseMvpActivity(), IMainView {
 
     @ProvidePresenter
     fun providePresenter(): MainPresenter = get()
-
-    private lateinit var storage: PreferencesStorage
 
     private val binding: ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
@@ -57,8 +51,6 @@ class MainActivity : ABaseMvpActivity(), IMainView {
 
         val view = binding.root
         setContentView(view)
-
-        storage = PreferencesStorage(this)
     }
 
     override fun onStart() {
@@ -69,13 +61,6 @@ class MainActivity : ABaseMvpActivity(), IMainView {
     override fun onStop() {
         connectMonitor.disable()
         super.onStop()
-    }
-
-    override fun showDefaultModel() {
-        val genderPref =
-            storage.value(ConstStorage.TITLE_GENDER, ConstStorage.DEFAULT_VALUE).toInt()
-        val gender = Gender.values()[genderPref]
-        loadModel(if (gender == Gender.MAN) R.drawable.man_default else R.drawable.woman_default)
     }
 
     override fun switchInfoVisibility(canVisible: Boolean) {
@@ -97,37 +82,13 @@ class MainActivity : ABaseMvpActivity(), IMainView {
         this.title = title
     }
 
-    // todo: тут и проверка на not-null, и завершение без обновления в случае ошибки.
-    //  Убрать !!, прокинуть в презентер потенциально неполные данные и обработать дальнейшее развитие событий на уровне презентера
     override fun updateWeatherData() {
         if (!connectMonitor.networkAvailable()) {
             setTitle(R.string.waiting_for_network)
             return
         }
 
-        val genderPref =
-            storage.value(ConstStorage.TITLE_GENDER, ConstStorage.DEFAULT_VALUE).toInt()
-        val gender = Gender.values().firstOrNull { it.ordinal == genderPref } ?: return
-
-        val stylePref = storage.value(ConstStorage.TITLE_STYLE, ConstStorage.DEFAULT_VALUE).toInt()
-        val style = Style.values().firstOrNull { it.ordinal == stylePref } ?: return
-
-        val weatherDegreePref =
-            storage.value(ConstStorage.TITLE_DEGREE, ConstStorage.DEFAULT_VALUE).toInt()
-        val weatherDegree =
-            Degree.values().firstOrNull { it.ordinal == weatherDegreePref } ?: return
-
-        val weatherTypePref =
-            storage.value(ConstStorage.TITLE_DATE, ConstStorage.DEFAULT_VALUE).toInt()
-        val weatherType =
-            WeatherType.values().firstOrNull { it.ordinal == weatherTypePref } ?: return
-
-        val clothing = ClothingConfig(gender, style)
-        val weather = WeatherConfig(weatherDegree, weatherType)
-
-        val city = storage.value(ConstStorage.TITLE_CITY, ConstStorage.DEFAULT_CITY)
-
-        presenter.updateAPIConnection(this, clothing, weather, city)
+        presenter.updateAPIConnection(this)
     }
 
     override fun setTextInfo(weather: Weather) {

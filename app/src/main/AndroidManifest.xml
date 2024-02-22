@@ -32,7 +32,7 @@
             android:label="@string/settings"
             android:parentActivityName=".mvp.main.view.MainActivity" />
         <activity
-            android:name=".LocationActivity"
+            android:name=".mvp.location.view.LocationActivity"
             android:label="@string/location"
             android:parentActivityName=".mvp.main.view.MainActivity" />
 

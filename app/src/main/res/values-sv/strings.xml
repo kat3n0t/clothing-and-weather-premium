@@ -12,6 +12,7 @@
     <string name="meter_sec">m/sek</string>
     <string name="preferences">Inställningar</string>
     <string name="refresh">Uppdatera</string>
+    <string name="remove_location">Vill du ta bort den här platsen?</string>
     <string name="save">Spara</string>
     <string name="settings">Inställningar</string>
     <string name="style">Stil</string>

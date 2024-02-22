@@ -12,6 +12,7 @@
     <string name="meter_sec">м/сек</string>
     <string name="preferences">Настройки</string>
     <string name="refresh">Обновить</string>
+    <string name="remove_location">Удалить это место?</string>
     <string name="save">Сохранить</string>
     <string name="settings">Настройки</string>
     <string name="style">Стиль</string>
